@@ -1,0 +1,99 @@
+{
+  "project_info": {
+    "project_number": "1030391000333",
+    "firebase_url": "https://resposta-ja.firebaseio.com",
+    "project_id": "resposta-ja",
+    "storage_bucket": "resposta-ja.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1030391000333:android:ece9bd56622541d0",
+        "android_client_info": {
+          "package_name": "ja.respostas.respostasja.rumpsolutions.br.respostasja"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1030391000333-qua57jbdtgfkk7d09m6f7dkm14skhk1d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ja.respostas.respostasja.rumpsolutions.br.respostasja",
+            "certificate_hash": "4eef3cd3843ce470643c2d4f47a710d3c3c1077a"
+          }
+        },
+        {
+          "client_id": "1030391000333-ugurkd79hpj1ipggi753g8misch4mqj5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwUZhwE0MTDVEoAnEJE3bdlhjS8-nyIp8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1030391000333-ugurkd79hpj1ipggi753g8misch4mqj5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1030391000333:android:bd124b895b9dc50a",
+        "android_client_info": {
+          "package_name": "ja.respostas.rumpsolutions.br.respostasja2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1030391000333-a9j25scv0ehu7j5pfikq95ak9filrm72.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ja.respostas.rumpsolutions.br.respostasja2",
+            "certificate_hash": "4eef3cd3843ce470643c2d4f47a710d3c3c1077a"
+          }
+        },
+        {
+          "client_id": "1030391000333-ugurkd79hpj1ipggi753g8misch4mqj5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwUZhwE0MTDVEoAnEJE3bdlhjS8-nyIp8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1030391000333-ugurkd79hpj1ipggi753g8misch4mqj5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
