@@ -1,7 +1,9 @@
-package ja.respostas.rumpsolutions.br.respostasja2;
+package ja.respostas.rumpsolutions.br.respostasja2.Aplication;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import ja.respostas.rumpsolutions.br.respostasja2.R;
 
 public class MainActivity extends AppCompatActivity {
 

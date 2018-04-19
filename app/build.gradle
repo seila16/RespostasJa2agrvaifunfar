@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 16
+    compileSdkVersion 26
     defaultConfig {
         applicationId "ja.respostas.rumpsolutions.br.respostasja2"
         minSdkVersion 16
