@@ -1,8 +1,10 @@
 package ja.respostas.rumpsolutions.br.respostasja2.Aplication;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,13 +15,34 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+
+import ja.respostas.rumpsolutions.br.respostasja2.R;
+import ja.respostas.rumpsolutions.br.respostasja2.funcoes.Funcoes;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private DatabaseReference reference;
+    private FirebaseAuth mAuth;
+    private Funcoes funcoes = new Funcoes();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //criação da estrutura
         setContentView(R.layout.activity_main);
+        mAuth = FirebaseAuth.getInstance();
+        initiElements();
+
+
+
+    }
+
+    private void initiElements() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -91,11 +114,27 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
-
+            FirebaseAuth.getInstance().signOut();
+            Intent logout = new Intent(this, LoginActivity2.class);
+            logout.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(logout);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null){
+            funcoes.toast(this, "Usuario nao conectado");
+        }else{
+            funcoes.toast(this, "usuario conectado");
+        }
+        Usuario usuario = new Usuario(this, currentUser);
+        reference = usuario.getReference();
     }
 }

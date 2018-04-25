@@ -1,36 +1,63 @@
 package ja.respostas.rumpsolutions.br.respostasja2.Aplication;
 
+import android.content.Context;
+import android.content.Intent;
+import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import ja.respostas.rumpsolutions.br.respostasja2.funcoes.Funcoes;
+
 public class Usuario {
-    private String nick;
+    private String idUser;
+    private String nome;
     private String email;
-    private String senha;
+    private FirebaseUser currentUser;
+    private Context context;
+
+    private DatabaseReference reference;
+
+    private Funcoes funcoes = new Funcoes();
 
 
-    public Usuario(){
+    public Usuario(Context context,FirebaseUser currentUser){
+        this.context = context;
+        this.currentUser = currentUser;
+
+        if (currentUser == null){
+
+            funcoes.abrirActivityUnica(context, LoginActivity2.class);
+
+        }else{
+            this.idUser = this.currentUser.getUid();
+            this.email = this.currentUser.getEmail();
+
+            this.reference = FirebaseDatabase
+                    .getInstance()
+                    .getReference()
+                    .child("users")
+                    .child(this.idUser);
+        }
 
     }
 
-    public String getNick() {
-        return nick;
-    }
-
-    public void setNick(String nick) {
-        this.nick = nick;
+    public String getIdUser() {
+        return this.idUser;
     }
 
     public String getEmail() {
-        return email;
+        return this.email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public String getNome() {
+        return this.nome;
     }
 
-    public String getSenha() {
-        return senha;
+    public DatabaseReference getReference() {
+        return this.reference;
     }
 
-    public void setSenha(String senha) {
-        this.senha = senha;
-    }
 }

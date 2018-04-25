@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,7 +23,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import ja.respostas.rumpsolutions.br.respostasja2.Autenticacao.CadastroActivity;
 import ja.respostas.rumpsolutions.br.respostasja2.R;
+import ja.respostas.rumpsolutions.br.respostasja2.funcoes.Funcoes;
 
 public class LoginActivity2 extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
@@ -39,6 +42,10 @@ public class LoginActivity2 extends AppCompatActivity implements GoogleApiClient
     private FirebaseAuth autenticacao;
     private SignInButton singG;
     public static final int SIGN_INC_CODE = 777;
+
+    private Funcoes funcoes = new Funcoes();
+
+    private final String TAG = "Login Activity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,9 +83,9 @@ public class LoginActivity2 extends AppCompatActivity implements GoogleApiClient
 
     private void updateUI(FirebaseUser currentUser){
         if(currentUser != null){
-            Intent intent = new Intent(context,MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
+            funcoes.abrirActivityUnica(this, MainActivity.class);
+        }else{
+            Log.w(TAG, " Nenhum usuario logado ");
         }
     }
 
@@ -87,8 +94,7 @@ public class LoginActivity2 extends AppCompatActivity implements GoogleApiClient
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, CadastroActivity.class);
-                startActivity(intent);
+                funcoes.abrirActivityNova(LoginActivity2.this, CadastroActivity.class);
             }
         };
     }
@@ -101,7 +107,7 @@ public class LoginActivity2 extends AppCompatActivity implements GoogleApiClient
             public void onClick(View view) {
                String email = edit_email.getText().toString();
                String password = edit_senha.getText().toString();
-               if ((email!=null) && !email.isEmpty() && (password!=null) && !password.isEmpty()){
+               if ( (email!=null) && !(email.isEmpty()) && (password!=null) && !(password.isEmpty()) ){
                    mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(LoginActivity2.this, new OnCompleteListener<AuthResult>() {
                        @Override
                        public void onComplete(@NonNull Task<AuthResult> task) {
@@ -138,8 +144,8 @@ public class LoginActivity2 extends AppCompatActivity implements GoogleApiClient
     }
 
     // metodo onde pega o resultado do request code que declarei estatico para o login GOOGLE
-
-    protected void onActiveResult(int requestCode, int resultCode, Intent data){
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode,resultCode,data);
         if(requestCode == SIGN_INC_CODE){
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
@@ -158,9 +164,7 @@ public class LoginActivity2 extends AppCompatActivity implements GoogleApiClient
     }
 
     private void goMainScreen() {
-        Intent intent = new Intent(this,MainActivity.class);
-        intent.addFlags(intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+        funcoes.abrirActivityUnica(this, MainActivity.class);
     }
 
     //onclick do botao do google
