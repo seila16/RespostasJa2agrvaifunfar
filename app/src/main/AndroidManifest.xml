@@ -19,9 +19,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Autenticacao.CadastroActivity"></activity>
-        <activity android:name=".Aplication.LoginActivity2"></activity>
-
+        <activity android:name=".Autenticacao.CadastroActivity" />
+        <activity android:name=".Aplication.LoginActivity2" />
     </application>
 
 </manifest>

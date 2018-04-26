@@ -3,10 +3,8 @@ package ja.respostas.rumpsolutions.br.respostasja2.Aplication;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -14,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -128,13 +127,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser == null){
-            funcoes.toast(this, "Usuario nao conectado");
+       FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null){
+            funcoes.toast(this, "Usuario  conectado");
+            Usuario usuario = new Usuario(this, currentUser);
+            reference = usuario.getReference();
         }else{
-            funcoes.toast(this, "usuario conectado");
+            funcoes.toast(this, "usuario não conectado");
         }
-        Usuario usuario = new Usuario(this, currentUser);
-        reference = usuario.getReference();
+
     }
 }
