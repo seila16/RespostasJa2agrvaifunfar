@@ -121,31 +121,31 @@ public class LoginActivity2 extends AppCompatActivity implements GoogleApiClient
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               String email = edit_email.getText().toString();
-               String password = edit_senha.getText().toString();
-               if ( (email!=null) && !(email.isEmpty()) && (password!=null) && !(password.isEmpty()) ){
-                   mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(LoginActivity2.this, new OnCompleteListener<AuthResult>() {
-                       @Override
-                       public void onComplete(@NonNull Task<AuthResult> task) {
-                           if (task.isSuccessful()){
-                               FirebaseUser user = mAuth.getCurrentUser();
-                               updateUI(user);
-                           }else{
-                               Toast.makeText(context, "Nenhum usuário encontrado.\n Email ou senha inválidos.",Toast.LENGTH_SHORT).show();
-                               updateUI(null);
-                           }
-                   }
+                String email = edit_email.getText().toString();
+                String password = edit_senha.getText().toString();
+                if ( (email!=null) && !(email.isEmpty()) && (password!=null) && !(password.isEmpty()) ){
+                    mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(LoginActivity2.this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()){
+                                FirebaseUser user = mAuth.getCurrentUser();
+                                updateUI(user);
+                            }else{
+                                Toast.makeText(context, "Nenhum usuário encontrado.\n Email ou senha inválidos.",Toast.LENGTH_SHORT).show();
+                                updateUI(null);
+                            }
+                        }
 
-                   });
-               }else{
-                           if(email==null || email.isEmpty()){
-                               Toast.makeText(context, "Campo email não digitado.", Toast.LENGTH_SHORT).show();
+                    });
+                }else{
+                    if(email==null || email.isEmpty()){
+                        Toast.makeText(context, "Campo email não digitado.", Toast.LENGTH_SHORT).show();
 
-                           }else if(password==null || password.isEmpty()){
-                               Toast.makeText(context, "Campo senha não digitado.", Toast.LENGTH_SHORT).show();
+                    }else if(password==null || password.isEmpty()){
+                        Toast.makeText(context, "Campo senha não digitado.", Toast.LENGTH_SHORT).show();
 
-                           }
-               }
+                    }
+                }
 
             }
         };
@@ -192,7 +192,7 @@ public class LoginActivity2 extends AppCompatActivity implements GoogleApiClient
     }
 
     private void goMainScreen() {
-      funcoes.abrirActivityUnica(this, MainActivity.class);
+        funcoes.abrirActivityUnica(this, MainActivity.class);
 
     }
 

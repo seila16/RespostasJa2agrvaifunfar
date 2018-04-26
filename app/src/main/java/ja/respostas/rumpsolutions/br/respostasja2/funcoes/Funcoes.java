@@ -2,6 +2,8 @@ package ja.respostas.rumpsolutions.br.respostasja2.funcoes;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.design.widget.Snackbar;
+import android.view.View;
 import android.widget.Toast;
 
 import ja.respostas.rumpsolutions.br.respostasja2.Aplication.LoginActivity2;
@@ -29,7 +31,13 @@ public class Funcoes {
 
     //sobrecarga do metodo TOAST...
     //int duração = Toast.Length_short / Toast.Length_LONG
-    private void toast(Context context, String s, int duracao){
+    public void toast(Context context, String s, int duracao){
         Toast.makeText(context, s, duracao).show();
+    }
+
+    //facilita implementaçao do Snack
+    public void snack(View view, String s){
+        Snackbar.make(view, s, Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
     }
 }
