@@ -66,7 +66,7 @@ public class AdapterList extends BaseAdapter {
         viewTitulo.setText(postagem.getTitulo());
 
         TextView viewConteudo = view.findViewById(R.id.adapter_resumo);
-        viewConteudo.setText((postagem.getConteudo().length()<40 ? postagem.getConteudo() : postagem.getConteudo().substring(0,37)+"..."));
+        viewConteudo.setText(postagem.getConteudo());
 
         TextView viewHora = view.findViewById(R.id.adapter_time);
         viewHora.setText(postagem.getHora());

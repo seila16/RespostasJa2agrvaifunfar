@@ -44,6 +44,17 @@ public class Usuario {
 
     }
 
+    public Usuario(String uid){
+
+        this.idUser = uid;
+        this.reference = FirebaseDatabase
+                .getInstance()
+                .getReference()
+                .child("users")
+                .child(this.idUser);
+
+    }
+
     public String getIdUser() {
         return this.idUser;
     }
