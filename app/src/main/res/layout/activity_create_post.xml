@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundActivity"
+    tools:context=".Aplication.CreatePost">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/constraintLayout4"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@android:color/white">
+
+        <ImageView
+            android:id="@+id/imageView4"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@mipmap/ic_launcher" />
+
+        <TextView
+            android:id="@+id/postUsuario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:text="TextView"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@+id/imageView4"
+            app:layout_constraintTop_toTopOf="@+id/imageView4" />
+
+        <Spinner
+            android:id="@+id/postMateria"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:spinnerMode="dialog"
+            app:layout_constraintStart_toStartOf="@+id/postUsuario"
+            app:layout_constraintTop_toBottomOf="@+id/postUsuario" />
+    </android.support.constraint.ConstraintLayout>
+
+    <MultiAutoCompleteTextView
+        android:id="@+id/postPostagem"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:background="@android:color/white"
+        android:gravity="top"
+        android:hint="Digite sua duvida..."
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/postUrl"
+        app:layout_constraintEnd_toEndOf="@+id/constraintLayout4"
+        app:layout_constraintStart_toStartOf="@+id/constraintLayout4"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout4" />
+
+    <EditText
+        android:id="@+id/postUrl"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="2dp"
+        android:background="@android:color/white"
+        android:ems="10"
+        android:hint="Adicionar url à postagem"
+        android:inputType="textPersonName"
+        android:paddingLeft="8dp"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/postImagem"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/postImagem"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/ic_add_image"
+        tools:ignore="VectorDrawableCompat" />
+
+
+</android.support.constraint.ConstraintLayout>

@@ -52,7 +52,8 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                funcoes.snack(view, "Imagina uma activity nova aparecendo agora... TCHAM");
+                funcoes.abrirActivityNova(MainActivity.this, CreatePost.class);
+                //funcoes.snack(view, "Imagina uma activity nova aparecendo agora... TCHAM");
             }
         });
 
