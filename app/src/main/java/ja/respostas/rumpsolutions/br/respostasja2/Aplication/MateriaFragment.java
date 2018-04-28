@@ -18,7 +18,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 import ja.respostas.rumpsolutions.br.respostasja2.R;
-import ja.respostas.rumpsolutions.br.respostasja2.adapters.MateriasList;
+import ja.respostas.rumpsolutions.br.respostasja2.adapters.AdapterMaterial;
 import ja.respostas.rumpsolutions.br.respostasja2.funcoes.Funcoes;
 
 
@@ -32,7 +32,7 @@ public class MateriaFragment extends Fragment {
     private Funcoes funcoes = new Funcoes();
     private ArrayList<Materias> materiasList;
     private DatabaseReference databaseReference;
-    private MateriasList adapaterMatList;
+    private AdapterMaterial adapaterMatList;
 
 
     @Override
@@ -45,7 +45,7 @@ public class MateriaFragment extends Fragment {
 
         ListView listView = view.findViewById(R.id.materiasList);
 
-        adapaterMatList = new MateriasList(materiasList,getActivity());
+        adapaterMatList = new AdapterMaterial(materiasList,getActivity());
         listView.setAdapter(adapaterMatList);
         listView.setOnItemClickListener(selectItem());
 

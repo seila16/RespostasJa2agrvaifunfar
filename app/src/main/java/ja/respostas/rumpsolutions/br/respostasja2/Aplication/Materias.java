@@ -6,7 +6,7 @@ public class Materias {
 
     }
 
-    private String nameMateria;
+    private String nome;
     private String cor;
     private String grupo;
     private String Id;
@@ -19,12 +19,12 @@ public class Materias {
         Id = id;
     }
 
-    public String getNameMateria() {
-        return nameMateria;
+    public String getNome() {
+        return this.nome;
     }
 
     public void setNameMateria(String nameMateria) {
-        this.nameMateria = nameMateria;
+        this.nome = nameMateria;
     }
 
     public String getCor() {
