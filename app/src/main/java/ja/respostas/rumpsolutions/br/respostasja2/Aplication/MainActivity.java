@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_gallery) {
 
-
+            materiasList();
 
         } else if (id == R.id.nav_slideshow) {
 
@@ -139,6 +139,16 @@ public class MainActivity extends AppCompatActivity
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_content, new ListFragment());
+        ft.commit();
+
+    }
+
+    private void materiasList() {
+
+
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragment_content, new MateriaFragment());
         ft.commit();
 
     }

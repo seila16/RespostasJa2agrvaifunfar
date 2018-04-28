@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.View;
@@ -11,8 +12,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import ja.respostas.rumpsolutions.br.respostasja2.Aplication.Materias;
 import ja.respostas.rumpsolutions.br.respostasja2.Aplication.Postagem;
 import ja.respostas.rumpsolutions.br.respostasja2.R;
 
@@ -25,6 +28,8 @@ public class AdapterList extends BaseAdapter {
         this.postagemList = postagemList;
         this.activity = activity;
     }
+
+
 
     @Override
     public int getCount() {
