@@ -61,7 +61,7 @@ public class MateriasList extends BaseAdapter {
         TextView viewTitle = view.findViewById(R.id.adapter_tituloMat);
             viewLogoMat.setText(materia.getNameMateria().substring(0,1).toUpperCase());
 
-
+        //return
         return view;
 
 
