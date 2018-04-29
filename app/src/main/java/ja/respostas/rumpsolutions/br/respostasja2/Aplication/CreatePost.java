@@ -69,8 +69,8 @@ public class CreatePost extends AppCompatActivity {
         hora =  cal.get(Calendar.DAY_OF_MONTH)+"/"+
                 (cal.get(Calendar.MONTH)+1)+"/"+
                 cal.get(Calendar.YEAR)+"-"+
-                cal.get(Calendar.HOUR_OF_DAY)+":"+
-                cal.get(Calendar.MINUTE);
+                (cal.get(Calendar.HOUR_OF_DAY)<10 ? "0" : "") + cal.get(Calendar.HOUR_OF_DAY)+":"+
+                (cal.get(Calendar.MINUTE)<10 ? "0" : "") + cal.get(Calendar.MINUTE);
 
 
 

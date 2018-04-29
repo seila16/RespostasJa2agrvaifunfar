@@ -13,6 +13,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.security.spec.ECField;
+import java.util.HashMap;
 
 import ja.respostas.rumpsolutions.br.respostasja2.funcoes.Funcoes;
 
@@ -35,11 +36,14 @@ public class Usuario {
 
         if(currentUser.getDisplayName() != null){
             if(!(currentUser.getDisplayName().isEmpty())) {
+                HashMap<String, String> dados = new HashMap<>();
+                dados.put("nome", currentUser.getDisplayName());
+                dados.put("foto", currentUser.getPhotoUrl().toString());
+
                 FirebaseDatabase.getInstance().getReference()
                         .child("users")
                         .child(this.idUser)
-                        .child("nome")
-                        .setValue(currentUser.getDisplayName());
+                        .setValue(dados);
             }
         }
 
