@@ -9,9 +9,9 @@
             android:icon="@drawable/ic_menu_list"
             android:title="Postagens" />
         <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
+            android:id="@+id/nav_materias"
+            android:icon="@drawable/ic_materias"
+            android:title="Matérias" />
         <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_menu_slideshow"
