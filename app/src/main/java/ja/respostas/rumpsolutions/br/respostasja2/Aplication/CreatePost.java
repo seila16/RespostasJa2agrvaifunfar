@@ -16,8 +16,11 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.security.spec.PSSParameterSpec;
 import java.text.SimpleDateFormat;
@@ -38,7 +41,8 @@ public class CreatePost extends AppCompatActivity {
     private String hora;
     private Spinner materia;
     private FirebaseAuth mAuth;
-
+    private DatabaseReference userReference;
+    private Usuario user;
 
 
     @Override
@@ -57,13 +61,16 @@ public class CreatePost extends AppCompatActivity {
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
         //pegar a hora atual e jogar em uma variável pegue no site do google e noizzzz
-        Date data = new Date();
+
 
         Calendar cal = Calendar.getInstance();
-        cal.setTime(data);
-        Date data_atual = cal.getTime();
 
-        hora = dateFormat_hora.format(data_atual);
+
+        hora =  cal.get(Calendar.DAY_OF_MONTH)+"/"+
+                (cal.get(Calendar.MONTH)+1)+"/"+
+                cal.get(Calendar.YEAR)+"-"+
+                cal.get(Calendar.HOUR_OF_DAY)+":"+
+                cal.get(Calendar.MINUTE);
 
 
 
@@ -73,8 +80,21 @@ public class CreatePost extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        Usuario usuario = new Usuario(this, currentUser);
-        databaseReference = usuario.getReference();
+        user = new Usuario(this, currentUser);
+        userReference = user.getReference();
+        userReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                usuario.setText(dataSnapshot.child("nome").getValue().toString());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 
 
@@ -94,7 +114,7 @@ public class CreatePost extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.post_post) {
-            writeNewPostagem("1",usuario.toString(),materia.toString(),"title",conteudo.toString(), hora);
+            writeNewPostagem("1",user.getIdUser(),"Materia Teste","title",conteudo.getText().toString(), hora);
             funcoes.toast(this,"Pergunta postada");
             return true;
         }
@@ -108,18 +128,16 @@ public class CreatePost extends AppCompatActivity {
 
 
         String key = databaseReference.child("postagens").push().getKey();
-        Postagem postagem = new Postagem(uid, usuario,materia,titulo,conteudo,hora);
-
-
+        Postagem postagem = new Postagem(usuario, key, materia, hora,conteudo, titulo);
 
 
         HashMap<String, String> post = new HashMap<>();
-        post.put("usuario", postagem.getUsuario());
-        post.put("conteudo", postagem.getConteudo());
-        post.put("uid", "testao");
-        post.put("materia", postagem.getMateria());
-        post.put("hora", postagem.getHora());
-        post.put("titulo", "teste");
+        post.put("usuario"  , postagem.getUsuario()     );
+        post.put("conteudo" , postagem.getConteudo()    );
+        post.put("uid"      , postagem.getUid()         );
+        post.put("materia"  , postagem.getMateria()     );
+        post.put("hora"     , postagem.getHora()        );
+        post.put("titulo"   , "teste"                   );
 
         Map<String , Object> childUpdates = new HashMap<>();
         childUpdates.put("/postagens/" + key, post);

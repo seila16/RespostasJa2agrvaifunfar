@@ -124,9 +124,9 @@ public class AdapterList extends BaseAdapter {
             ontem.add(Calendar.DAY_OF_MONTH, -1);
 
 
-            System.out.println(data.toString());
-            System.out.println(hoje.toString());
-            System.out.println("-----------------------------------------------------------------------");
+            //System.out.println(data.toString());
+            //System.out.println(hoje.toString());
+            //System.out.println("-----------------------------------------------------------------------");
 
             if (data.before(ontem)){
                 viewHora.setText(date[0]);
