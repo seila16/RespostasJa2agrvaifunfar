@@ -44,6 +44,7 @@
             android:spinnerMode="dialog"
             app:layout_constraintStart_toStartOf="@+id/postUsuario"
             app:layout_constraintTop_toBottomOf="@+id/postUsuario" />
+
     </android.support.constraint.ConstraintLayout>
 
     <MultiAutoCompleteTextView

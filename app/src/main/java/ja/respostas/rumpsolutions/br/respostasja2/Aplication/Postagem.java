@@ -14,6 +14,18 @@ public class Postagem {
 
     }
 
+
+    public Postagem(String usuario, String uid, String materia, String hora, String conteudo, String titulo){
+
+        this.conteudo = conteudo;
+        this.materia = materia;
+        this.usuario = usuario;
+        this.uid = uid;
+        this.hora = hora;
+        this.titulo = titulo;
+
+    }
+
     public String getMateria() {
         return this.materia;
     }
@@ -37,4 +49,6 @@ public class Postagem {
     public String getUid() {
         return this.uid;
     }
+
+
 }
