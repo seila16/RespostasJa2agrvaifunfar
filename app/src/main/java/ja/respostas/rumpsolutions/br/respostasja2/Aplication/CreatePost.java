@@ -1,14 +1,23 @@
 package ja.respostas.rumpsolutions.br.respostasja2.Aplication;
 
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputFilter;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.MultiAutoCompleteTextView;
@@ -16,6 +25,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -23,7 +34,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.security.spec.PSSParameterSpec;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,9 +54,11 @@ import ja.respostas.rumpsolutions.br.respostasja2.funcoes.Funcoes;
 
 public class CreatePost extends AppCompatActivity {
 
+    private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 15973;
     private Funcoes funcoes = new Funcoes();
     private DatabaseReference databaseReference;
-    private MultiAutoCompleteTextView conteudo;
+    private EditText conteudo;
+    private EditText url;
     private TextView usuario;
     private String hora;
     private Spinner materia;
@@ -51,7 +69,9 @@ public class CreatePost extends AppCompatActivity {
     private DatabaseReference uid;
     private List<String> nomesM = new ArrayList<String>();
     private String aux;
-
+    private String caminhoImage;
+    private FirebaseStorage storage;
+    private StorageReference storageReference;
 
 
     @Override
@@ -64,20 +84,22 @@ public class CreatePost extends AppCompatActivity {
 
         conteudo = findViewById(R.id.postPostagem);
         usuario = findViewById(R.id.postUsuario);
-        SimpleDateFormat dateFormat_hora = new SimpleDateFormat("dd-MM-yyyy-HH:mm");
         materia = findViewById(R.id.postMateria);
         titulo = findViewById(R.id.postTitle);
+        url = findViewById(R.id.postUrl);
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
-        //pegar a hora atual e jogar em uma variável pegue no site do google e noizzzz
+        //Configuração do FIREBASE STORAGE para armazenamento de imagem - 01/05/2018
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference().child("posts");
 
 
         Calendar cal = Calendar.getInstance();
 
 
         hora =  cal.get(Calendar.DAY_OF_MONTH)+"/"+
-                (cal.get(Calendar.MONTH)+1)+"/"+
+                (cal.get(Calendar.MONTH)<10 ? "0" : "") + (cal.get(Calendar.MONTH)+1)+"/"+
                 cal.get(Calendar.YEAR)+"-"+
                 (cal.get(Calendar.HOUR_OF_DAY)<10 ? "0" : "") + cal.get(Calendar.HOUR_OF_DAY)+":"+
                 (cal.get(Calendar.MINUTE)<10 ? "0" : "") + cal.get(Calendar.MINUTE);
@@ -171,22 +193,73 @@ public class CreatePost extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.post_post) {
-            writeNewPostagem(uid.toString(),user.getIdUser(),"teste",titulo.getText().toString(),conteudo.getText().toString(), hora);
-            funcoes.toast(this,"Pergunta postada");
-            return true;
+        switch (id){
+            case R.id.post_post:
+                writeNewPostagem(user.getIdUser(),"teste",titulo.getText().toString(),conteudo.getText().toString(), hora, url.getText().toString());
+                funcoes.toast(this,"Pergunta postada");
+                break;
+            case R.id.post_imagem:
+                addImage();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    private void addImage() {
+        File file = new File(Environment.getExternalStorageDirectory() + "/arquivo.jpg");
+        Uri outputFileUri = Uri.fromFile(file);
+        Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+        startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        System.gc(); // garbage colector
+        if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                try {
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inSampleSize = 3;
+                    Bitmap imageBitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory() + "/imagePost.jpg", options);
+
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    boolean validaCompressao = imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+
+                    byte[] fotoBinario = outputStream.toByteArray();
+
+                    UploadTask uploadTask = storageReference.putBytes(fotoBinario);
+                    uploadTask.addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(CreatePost.this, "Falha ao enviar imagem. Tente novamente mais tarde.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            caminhoImage = taskSnapshot.getDownloadUrl().toString();
+                        }
+                    });
+
+                } catch (Exception e) {
+                    Toast.makeText(this, "Erro ao carregar imagem.",Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
+            } else if (resultCode == RESULT_CANCELED) {
+                System.out.println("Envio de imagem cancelado");
+            } else {
+                System.out.println("Outra opção de imagem...");
+            }
+        }
+    }
 
 
-    private void writeNewPostagem(String uid, String usuario, String materia, String titulo, String conteudo, String hora){
+    private void writeNewPostagem(String usuario, String materia, String titulo, String conteudo, String hora, String url){
 
 
         String key = databaseReference.child("postagens").push().getKey();
-        Postagem postagem = new Postagem(usuario, key, materia, hora,conteudo, titulo);
+        Postagem postagem = new Postagem(usuario, key, materia, hora,conteudo, titulo, url);
 
 
         HashMap<String, String> post = new HashMap<>();
@@ -196,12 +269,12 @@ public class CreatePost extends AppCompatActivity {
         post.put("materia"  , postagem.getMateria()     );
         post.put("hora"     , postagem.getHora()        );
         post.put("titulo"   , postagem.getTitulo()      );
+        post.put("url"      , postagem.getUrl()         );
 
         Map<String , Object> childUpdates = new HashMap<>();
         childUpdates.put("/postagens/" + key, post);
 
         databaseReference.updateChildren(childUpdates);
-
 
 
     }

@@ -8,6 +8,7 @@ public class Postagem {
     private String usuario;
     private String materia;
     private String uid;
+    private String url;
 
 
     public Postagem(){
@@ -15,8 +16,9 @@ public class Postagem {
     }
 
 
-    public Postagem(String usuario, String uid, String materia, String hora, String conteudo, String titulo){
+    public Postagem(String usuario, String uid, String materia, String hora, String conteudo, String titulo, String url){
 
+        this.url = url;
         this.conteudo = conteudo;
         this.materia = materia;
         this.usuario = usuario;
@@ -50,5 +52,7 @@ public class Postagem {
         return this.uid;
     }
 
-
+    public String getUrl() {
+        return this.url;
+    }
 }

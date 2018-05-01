@@ -11,7 +11,10 @@
         android:id="@+id/constraintLayout4"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:background="@android:color/white">
+        android:background="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/imageView4"
@@ -47,24 +50,39 @@
 
     </android.support.constraint.ConstraintLayout>
 
-    <MultiAutoCompleteTextView
+    <EditText
+        android:id="@+id/postTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:background="@android:color/background_light"
+        android:ems="10"
+        android:hint="Título"
+        android:inputType="textPersonName"
+        android:paddingBottom="4dp"
+        android:paddingLeft="16dp"
+        android:paddingTop="4dp"
+        android:textColor="@color/colorAccent"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout4" />
+
+    <EditText
         android:id="@+id/postPostagem"
         android:layout_width="0dp"
         android:layout_height="352dp"
-        android:layout_marginBottom="2dp"
         android:layout_marginTop="2dp"
         android:background="@android:color/white"
         android:gravity="top"
         android:hint="Digite sua duvida..."
+        android:inputType="textLongMessage"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingTop="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/postUrl"
-        app:layout_constraintEnd_toEndOf="@+id/constraintLayout4"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/constraintLayout4"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout4"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/postTitle" />
 
     <ImageView
         android:id="@+id/imageView5"
@@ -77,7 +95,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/postUrl"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/postUrl"
-        app:srcCompat="@drawable/ic_link" />
+        app:srcCompat="@drawable/ic_link"
+        tools:ignore="VectorDrawableCompat" />
 
     <EditText
         android:id="@+id/postUrl"
@@ -85,16 +104,17 @@
         android:layout_height="40dp"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp"
         android:background="@android:color/white"
         android:ems="10"
         android:hint="Adicionar url à postagem"
         android:inputType="textPersonName"
         android:paddingLeft="8dp"
         android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/postPreview"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/imageView5" />
+        app:layout_constraintStart_toEndOf="@+id/imageView5"
+        app:layout_constraintTop_toBottomOf="@+id/postPostagem" />
 
     <ImageView
         android:id="@+id/postPreview"
@@ -110,27 +130,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/ic_menu_gallery" />
 
-    <EditText
-        android:id="@+id/postTitle"
-        android:layout_width="361dp"
-        android:layout_height="25dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="11dp"
-        android:background="@android:color/background_light"
-        android:ems="10"
-        android:hint="Título"
-        android:inputType="textPersonName"
-        android:textColor="@color/colorAccent"
-        app:layout_constraintBottom_toTopOf="@+id/postPostagem"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.571"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout4"
-        app:layout_constraintVertical_bias="0.0" />
 
 
 </android.support.constraint.ConstraintLayout>
