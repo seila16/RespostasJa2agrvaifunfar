@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
+import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -24,6 +25,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 
 import ja.respostas.rumpsolutions.br.respostasja2.R;
+import ja.respostas.rumpsolutions.br.respostasja2.adapters.AdapterMaterial;
 import ja.respostas.rumpsolutions.br.respostasja2.funcoes.Funcoes;
 
 public class MainActivity extends AppCompatActivity
@@ -111,13 +113,21 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+        switch (id){
+            case R.id.materia_search:
+
+        }
+
+
         if (id == R.id.nav_list) {
 
             menuList();
+            setVisible(false);
 
         } else if (id == R.id.nav_materias) {
 
             materiasList();
+            setVisible(true);
 
         } else if (id == R.id.nav_slideshow) {
 
@@ -155,6 +165,9 @@ public class MainActivity extends AppCompatActivity
         ft.replace(R.id.fragment_content, new MateriaFragment());
         ft.commit();
 
+
+
+
     }
 
     @Override
@@ -164,4 +177,31 @@ public class MainActivity extends AppCompatActivity
         Usuario usuario = new Usuario(this, currentUser);
         reference = usuario.getReference();
     }
+
+    public boolean onCreateOpetionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+
+        getMenuInflater().inflate(R.menu.search_menu, menu);
+        SearchView sv = (SearchView) menu.findItem(R.id.search_materia).getActionView();
+        sv.setOnQueryTextListener(new SearchFiltro());
+
+        return (true);
+    }
+
+    public class SearchFiltro implements SearchView.OnQueryTextListener{
+
+        @Override
+        public boolean onQueryTextSubmit(String s) {
+            return false;
+        }
+
+        @Override
+        public boolean onQueryTextChange(String text) {
+            if (text.toString() != null && !text.toString().equals("")){
+             //   AdapterMaterial adapter = new AdapterMaterial(MainActivity.this)
+            }
+        }
+    }
+
+
 }

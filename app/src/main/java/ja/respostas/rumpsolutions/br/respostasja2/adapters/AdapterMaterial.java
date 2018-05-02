@@ -3,11 +3,14 @@ package ja.respostas.rumpsolutions.br.respostasja2.adapters;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ja.respostas.rumpsolutions.br.respostasja2.Aplication.Materias;
@@ -16,15 +19,22 @@ import ja.respostas.rumpsolutions.br.respostasja2.funcoes.Funcoes;
 
 public class AdapterMaterial extends BaseAdapter {
 
-    private final List<Materias> materiasList;
+    private List<Materias> materiasList;
     private final Activity act;
     private Funcoes funcoes;
+
 
     public AdapterMaterial(List<Materias> materiasList, Activity act){
         this.materiasList = materiasList;
         this.act = act;
     }
 
+    public void setFilter(List<Materias> SearchList){
+        materiasList = new ArrayList<>();
+        materiasList.addAll(SearchList);
+        notifyDataSetChanged();
+
+;    }
 
 
 
@@ -54,7 +64,8 @@ public class AdapterMaterial extends BaseAdapter {
 
         Materias materia = materiasList.get(i);
 
-        TextView viewLogoMat = view.findViewById(R.id.adapter_logoMat);
+            TextView viewLogoMat = view.findViewById(R.id.adapter_logoMat);
+
             GradientDrawable drawableLogo = (GradientDrawable) viewLogoMat.getBackground();
             //Altera a cor da logo
             try {
@@ -68,7 +79,8 @@ public class AdapterMaterial extends BaseAdapter {
             viewLogoMat.setText(materia.getNome().substring(0, 1).toUpperCase());
 
 
-        TextView viewTitle = view.findViewById(R.id.adapter_tituloMat);
+            TextView viewTitle = view.findViewById(R.id.adapter_tituloMat);
+            viewTitle.setText(materia.getNome());
 
 
         //return
@@ -77,4 +89,10 @@ public class AdapterMaterial extends BaseAdapter {
 
 
     }
+
+
+
 }
+
+
+

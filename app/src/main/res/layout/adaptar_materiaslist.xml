@@ -6,6 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
+
     <TextView
         android:id="@+id/adapter_tituloMat"
         android:layout_width="0dp"
@@ -22,15 +24,16 @@
 
     <TextView
         android:id="@+id/adapter_logoMat"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="52dp"
+        android:layout_height="53dp"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:background="@drawable/shape"
         android:gravity="center"
         android:text="M"
-        android:textSize="36sp"
+        android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 </android.support.constraint.ConstraintLayout>

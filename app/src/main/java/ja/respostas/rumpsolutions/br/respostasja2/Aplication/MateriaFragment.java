@@ -4,10 +4,18 @@ package ja.respostas.rumpsolutions.br.respostasja2.Aplication;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SearchView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,6 +41,7 @@ public class MateriaFragment extends Fragment {
     private ArrayList<Materias> materiasList;
     private DatabaseReference databaseReference;
     private AdapterMaterial adapaterMatList;
+
 
 
     @Override
@@ -77,7 +86,54 @@ public class MateriaFragment extends Fragment {
                 funcoes.toast(getContext(),materiasList.get(i).getId());
             }
         };
-    }
+
+
 
     }
+
+
+
+
+
+    /*@Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+        MenuItem item = menu.add("Search");
+        item.setIcon(R.drawable.ic_materias);
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        SearchView sv = new SearchView(getActivity());
+
+        int id = sv.getContext().getResources().getIdentifier("android:id/search_src_text",null,null);
+        TextView textView = (TextView) sv.findViewById(id);
+        textView.setHint("Search location...");
+        textView.setHintTextColor(getResources().getColor(R.color.colorPrimary));
+        textView.setTextColor(getResources().getColor(R.color.color_text));
+
+        sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+
+                if(s.length() < 4){
+                    Toast.makeText(getActivity(),"sua busca não pode ter menos que 3 caracteres", Toast.LENGTH_SHORT).show();
+                    return true;
+                }else
+
+                    return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return true;
+            }
+        });
+
+        item.setActionView(sv);
+    }*/
+
+
+}
+
+
+
+
+
 
