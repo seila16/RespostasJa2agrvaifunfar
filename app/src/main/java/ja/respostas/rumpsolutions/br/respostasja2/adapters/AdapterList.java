@@ -129,7 +129,7 @@ public class AdapterList extends BaseAdapter {
             //System.out.println("-----------------------------------------------------------------------");
 
             if (data.before(ontem)){
-                viewHora.setText(date[0]);
+                viewHora.setText((Integer.parseInt(dia[0]) < 10 ? "0" : "" ) + date[0]);
             }else if(data.before(hoje)){
                 viewHora.setText("Ontem " + date[1]);
             }else if(data.after(ontem)){

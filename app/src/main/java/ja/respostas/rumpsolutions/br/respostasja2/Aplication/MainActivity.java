@@ -1,5 +1,6 @@
 package ja.respostas.rumpsolutions.br.respostasja2.Aplication;
 
+import android.content.ClipData;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -16,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity
     private DatabaseReference reference;
     private FirebaseAuth mAuth;
     private Funcoes funcoes = new Funcoes();
+
 
 
     @Override
@@ -89,6 +92,10 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
+        EditText editText = new EditText(this);
+
+
         return true;
     }
 
@@ -122,12 +129,10 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_list) {
 
             menuList();
-            setVisible(false);
 
         } else if (id == R.id.nav_materias) {
 
             materiasList();
-            setVisible(true);
 
         } else if (id == R.id.nav_slideshow) {
 
@@ -200,6 +205,7 @@ public class MainActivity extends AppCompatActivity
             if (text.toString() != null && !text.toString().equals("")){
              //   AdapterMaterial adapter = new AdapterMaterial(MainActivity.this)
             }
+            return true;
         }
     }
 

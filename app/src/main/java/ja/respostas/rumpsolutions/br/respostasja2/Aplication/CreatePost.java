@@ -55,6 +55,7 @@ import ja.respostas.rumpsolutions.br.respostasja2.funcoes.Funcoes;
 public class CreatePost extends AppCompatActivity {
 
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 15973;
+    private static final String TAG = "CreatPost";
     private Funcoes funcoes = new Funcoes();
     private DatabaseReference databaseReference;
     private EditText conteudo;
@@ -66,12 +67,11 @@ public class CreatePost extends AppCompatActivity {
     private DatabaseReference userReference;
     private Usuario user;
     private EditText titulo;
-    private DatabaseReference uid;
-    private List<String> nomesM = new ArrayList<String>();
-    private String aux;
+
     private String caminhoImage;
     private FirebaseStorage storage;
     private StorageReference storageReference;
+    private byte[] fotoBinario;
 
 
     @Override
@@ -90,11 +90,6 @@ public class CreatePost extends AppCompatActivity {
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
-        //Configuração do FIREBASE STORAGE para armazenamento de imagem - 01/05/2018
-        storage = FirebaseStorage.getInstance();
-        storageReference = storage.getReference().child("posts");
-
-
         Calendar cal = Calendar.getInstance();
 
 
@@ -104,55 +99,7 @@ public class CreatePost extends AppCompatActivity {
                 (cal.get(Calendar.HOUR_OF_DAY)<10 ? "0" : "") + cal.get(Calendar.HOUR_OF_DAY)+":"+
                 (cal.get(Calendar.MINUTE)<10 ? "0" : "") + cal.get(Calendar.MINUTE);
 
-        //instaciando a classe materias e pegando os dados dela, em seguida jogando dentro do arraylist criado nomeM.
 
-
-
-        //criar um arrayadapter usando um padrao de layout da classe R do android passando o arraylist nomesM
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item,nomesM);
-
-        ArrayAdapter<String> spinnerArrayAdapter = arrayAdapter;
-        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
-        materia.setAdapter(spinnerArrayAdapter);
-
-        //metodo do spinner para capturar o item selecionado
-
-        materia.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                //pega o nome pela posição
-                aux = adapterView.getItemAtPosition(i).toString();
-
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("server/saving-data/respostas-ja/materias");
-
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()){
-                    Materias mater = dataSnapshot.getValue(Materias.class);
-                   while (mater.getNome() != null) {
-                       nomesM.add(mater.getNome());
-                   }
-                }
-
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
     }
 
     @Override
@@ -161,7 +108,6 @@ public class CreatePost extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         user = new Usuario(this, currentUser);
         userReference = user.getReference();
-        uid = userReference;
         userReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -195,8 +141,9 @@ public class CreatePost extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         switch (id){
             case R.id.post_post:
-                writeNewPostagem(user.getIdUser(),"teste",titulo.getText().toString(),conteudo.getText().toString(), hora, url.getText().toString());
+                writeNewPostagem(user.getIdUser(),"teste",titulo.getText().toString(),conteudo.getText().toString(), hora, url.getText().toString(), this.fotoBinario);
                 funcoes.toast(this,"Pergunta postada");
+                finish();
                 break;
             case R.id.post_imagem:
                 addImage();
@@ -207,7 +154,7 @@ public class CreatePost extends AppCompatActivity {
     }
 
     private void addImage() {
-        File file = new File(Environment.getExternalStorageDirectory() + "/arquivo.jpg");
+        File file = new File(Environment.getExternalStorageDirectory() + "/imagePost.jpg");
         Uri outputFileUri = Uri.fromFile(file);
         Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
@@ -224,23 +171,16 @@ public class CreatePost extends AppCompatActivity {
                     Bitmap imageBitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory() + "/imagePost.jpg", options);
 
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                    boolean validaCompressao = imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-
-                    byte[] fotoBinario = outputStream.toByteArray();
-
-                    UploadTask uploadTask = storageReference.putBytes(fotoBinario);
-                    uploadTask.addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(CreatePost.this, "Falha ao enviar imagem. Tente novamente mais tarde.", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            caminhoImage = taskSnapshot.getDownloadUrl().toString();
-                        }
-                    });
+                    boolean validaCompressao = imageBitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream);
+                    byte[] imageByte = outputStream.toByteArray();
+                    if (validaCompressao) {
+                        if (imageByte == null)
+                            Toast.makeText(this, "Nenhuma imagem selecionada.", Toast.LENGTH_SHORT).show();
+                        else
+                            setFotoBinario(imageByte);
+                    }else{
+                        Toast.makeText(this, "Falha na montagem da imagem.", Toast.LENGTH_SHORT).show();
+                    }
 
                 } catch (Exception e) {
                     Toast.makeText(this, "Erro ao carregar imagem.",Toast.LENGTH_LONG).show();
@@ -254,11 +194,46 @@ public class CreatePost extends AppCompatActivity {
         }
     }
 
+    private void setFotoBinario(byte[] fotoBinario){
+        if (fotoBinario != null) {
+            this.fotoBinario = fotoBinario;
+        }else
+            Toast.makeText(this, "Nenhuma imagem selecionada.", Toast.LENGTH_SHORT).show();
+    }
 
-    private void writeNewPostagem(String usuario, String materia, String titulo, String conteudo, String hora, String url){
 
+    private void writeNewPostagem(String usuario, String materia, String titulo, String conteudo, String hora, String url, byte[] fotoBinario){
 
+        //cria uid da postagem
         String key = databaseReference.child("postagens").push().getKey();
+
+        //enviar imagem do post
+
+        //Configuração do FIREBASE STORAGE para armazenamento de imagem - 01/05/2018
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference().child("posts/"+key+".jpg");
+
+        if (fotoBinario != null) {
+            UploadTask uploadTask = storageReference.putBytes(fotoBinario);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(CreatePost.this, "Falha ao enviar imagem. Tente novamente mais tarde.", Toast.LENGTH_SHORT).show();
+                }
+            });
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    caminhoImage = taskSnapshot.getDownloadUrl().toString();
+                }
+            });
+            Log.d(TAG, "Imagem adicionada");
+        }else{
+            Log.d(TAG, "Nenhuma imagem adicionada : " + this.fotoBinario);
+        }
+
+        //envia dados do post
+
         Postagem postagem = new Postagem(usuario, key, materia, hora,conteudo, titulo, url);
 
 
@@ -275,6 +250,9 @@ public class CreatePost extends AppCompatActivity {
         childUpdates.put("/postagens/" + key, post);
 
         databaseReference.updateChildren(childUpdates);
+
+
+
 
 
     }

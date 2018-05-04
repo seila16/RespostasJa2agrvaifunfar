@@ -1,6 +1,7 @@
 package ja.respostas.rumpsolutions.br.respostasja2.Aplication;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import ja.respostas.rumpsolutions.br.respostasja2.R;
@@ -59,6 +61,7 @@ public class ListFragment extends Fragment {
                     Postagem postagem = data.getValue(Postagem.class);
                     postagens.add(postagem);
                 }
+                Collections.reverse(postagens);
                 adapterList.notifyDataSetChanged();
             }
 
@@ -78,7 +81,10 @@ public class ListFragment extends Fragment {
         return new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                funcoes.toast(getContext(), postagens.get(i).getUid());
+                //funcoes.toast(getContext(), postagens.get(i).getUid());
+                Intent intent = new Intent(getActivity(), PostActivity.class);
+                intent.putExtra("POST", postagens.get(i).getUid());
+                startActivity(intent);
             }
         };
     }

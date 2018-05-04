@@ -3,6 +3,7 @@
     package="ja.respostas.rumpsolutions.br.respostasja2">
     //gg
     <permission android:name="android.permission.CAMERA" />
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
@@ -25,7 +26,8 @@
         </activity>
         <activity android:name=".Autenticacao.CadastroActivity" />
         <activity android:name=".Aplication.LoginActivity2" />
-        <activity android:name=".Aplication.CreatePost"></activity>
+        <activity android:name=".Aplication.CreatePost" />
+        <activity android:name=".Aplication.PostActivity"></activity>
     </application>
 
 </manifest>
