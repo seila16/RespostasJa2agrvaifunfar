@@ -56,7 +56,7 @@ public class MateriaFragment extends Fragment {
 
         adapaterMatList = new AdapterMaterial(materiasList,getActivity());
         listView.setAdapter(adapaterMatList);
-        listView.setOnItemSelectedListener(selectItem());
+        listView.setOnItemClickListener(selectItem());
 
 
         databaseReference.addValueEventListener(new ValueEventListener() {
@@ -79,15 +79,18 @@ public class MateriaFragment extends Fragment {
         return view;
     }
 
-    private AdapterView.OnItemSelectedListener selectItem() {
-        return new AdapterView.OnItemSelectedListener() {
+    private AdapterView.OnItemClickListener selectItem() {
+        return new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(getActivity().getApplicationContext(), materiasList.get(i).getNome(), Toast.LENGTH_SHORT).show();
-            }
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
+                Fragment sFragment = new ListFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("MATERIA", materiasList.get(i).getNome());
+                sFragment.setArguments(bundle);
+
+                getActivity().getSupportFragmentManager()
+                        .beginTransaction().replace(R.id.fragment_content, sFragment).commit();
 
             }
         };

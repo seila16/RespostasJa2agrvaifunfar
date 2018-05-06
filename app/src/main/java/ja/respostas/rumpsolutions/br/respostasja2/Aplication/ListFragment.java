@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,6 +32,8 @@ public class ListFragment extends Fragment {
     private ArrayList<Postagem> postagens;
     private AdapterList adapterList;
 
+    private String filtroMateria;
+
     public ListFragment() {
 
     }
@@ -44,6 +47,14 @@ public class ListFragment extends Fragment {
 
         reference = FirebaseDatabase.getInstance().getReference().child("postagens");
         postagens = new ArrayList<>();
+        try {
+            Bundle filtroBundle = getArguments();
+            filtroMateria = filtroBundle.getString("MATERIA");
+            Toast.makeText(getActivity(), filtroMateria, Toast.LENGTH_SHORT).show();
+        }catch (Exception e){
+
+        }
+
 
 
         ListView listView = view.findViewById(R.id.listPostagens);
@@ -58,8 +69,10 @@ public class ListFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 postagens.clear();
                 for (DataSnapshot data : dataSnapshot.getChildren()){
+
                     Postagem postagem = data.getValue(Postagem.class);
                     postagens.add(postagem);
+
                 }
                 Collections.reverse(postagens);
                 adapterList.notifyDataSetChanged();

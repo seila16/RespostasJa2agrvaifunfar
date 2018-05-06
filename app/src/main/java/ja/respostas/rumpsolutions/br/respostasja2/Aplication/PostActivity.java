@@ -120,9 +120,14 @@ public class PostActivity extends AppCompatActivity {
             storageRef.child("posts/"+postID+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
-                    imageURL = uri.toString();
-                    Glide.with(PostActivity.this).load(imageURL).into(viewImage);
-                    viewImage.setVisibility(View.VISIBLE);
+
+                    try{
+                        imageURL = uri.toString();
+                        Glide.with(PostActivity.this).load(imageURL).into(viewImage);
+                        viewImage.setVisibility(View.VISIBLE);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
                 }
             });
         }catch (Exception e){
