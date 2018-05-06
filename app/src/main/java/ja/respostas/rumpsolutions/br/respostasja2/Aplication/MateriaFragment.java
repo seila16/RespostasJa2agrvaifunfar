@@ -56,7 +56,7 @@ public class MateriaFragment extends Fragment {
 
         adapaterMatList = new AdapterMaterial(materiasList,getActivity());
         listView.setAdapter(adapaterMatList);
-        listView.setOnItemClickListener(selectItem());
+        listView.setOnItemSelectedListener(selectItem());
 
 
         databaseReference.addValueEventListener(new ValueEventListener() {
@@ -79,56 +79,19 @@ public class MateriaFragment extends Fragment {
         return view;
     }
 
-        private AdapterView.OnItemClickListener selectItem(){
-            return new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                funcoes.toast(getContext(),materiasList.get(i).getId());
+    private AdapterView.OnItemSelectedListener selectItem() {
+        return new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Toast.makeText(getActivity().getApplicationContext(), materiasList.get(i).getNome(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
             }
         };
-
-
-
     }
-
-
-
-
-
-    /*@Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
-        MenuItem item = menu.add("Search");
-        item.setIcon(R.drawable.ic_materias);
-        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-        SearchView sv = new SearchView(getActivity());
-
-        int id = sv.getContext().getResources().getIdentifier("android:id/search_src_text",null,null);
-        TextView textView = (TextView) sv.findViewById(id);
-        textView.setHint("Search location...");
-        textView.setHintTextColor(getResources().getColor(R.color.colorPrimary));
-        textView.setTextColor(getResources().getColor(R.color.color_text));
-
-        sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-
-                if(s.length() < 4){
-                    Toast.makeText(getActivity(),"sua busca não pode ter menos que 3 caracteres", Toast.LENGTH_SHORT).show();
-                    return true;
-                }else
-
-                    return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-                return true;
-            }
-        });
-
-        item.setActionView(sv);
-    }*/
-
 
 }
 

@@ -11,6 +11,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.github.chrisbanes.photoview.PhotoView;
+import com.github.chrisbanes.photoview.PhotoViewAttacher;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,7 +30,7 @@ public class PostActivity extends AppCompatActivity {
 
     private TextView viewTitulo;
     private TextView viewConteudo;
-    private ImageView viewImage;
+    private PhotoView viewImage;
     private TextView viewUrl;
     private String imageURL;
 
