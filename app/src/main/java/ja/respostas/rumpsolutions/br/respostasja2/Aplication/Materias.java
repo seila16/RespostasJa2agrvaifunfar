@@ -1,15 +1,23 @@
 package ja.respostas.rumpsolutions.br.respostasja2.Aplication;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 public class Materias {
 
     public Materias(){
 
     }
 
+    public Materias(String materia){
+        this.nome = materia;
+    }
+
     private String nome;
     private String cor;
     private String grupo;
     private String Id;
+
 
     public String getId() {
         return Id;
@@ -41,5 +49,9 @@ public class Materias {
 
     public void setGrupo(String grupo) {
         this.grupo = grupo;
+    }
+
+    public DatabaseReference getReference(){
+        return FirebaseDatabase.getInstance().getReference().child("materias").child(this.nome);
     }
 }

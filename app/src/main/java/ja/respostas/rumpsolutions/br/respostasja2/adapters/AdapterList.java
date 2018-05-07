@@ -72,14 +72,6 @@ public class AdapterList extends BaseAdapter {
 
         //recuperando as view
 
-
-
-        TextView viewLogo = view.findViewById(R.id.adapter_logo);
-                GradientDrawable drawableLogo = (GradientDrawable) viewLogo.getBackground();
-                drawableLogo.setColor( activity.getResources().getColor(R.color.colorPrimary) );
-                viewLogo.setBackground(drawableLogo);
-        viewLogo.setText(postagem.getMateria().substring(0,1).toUpperCase());
-
         TextView viewTitulo = view.findViewById(R.id.adapter_titulo);
         viewTitulo.setText(postagem.getTitulo());
 
@@ -159,8 +151,37 @@ public class AdapterList extends BaseAdapter {
             }
         });
 
+        final TextView viewLogo = view.findViewById(R.id.adapter_logo);
 
 
+        //N
+        Materias materias = new Materias(postagem.getMateria());
+        materias.getReference().addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                try{
+
+                    GradientDrawable drawableLogo = (GradientDrawable) viewLogo.getBackground();
+                    drawableLogo.setColor( Color.parseColor(dataSnapshot.child("cor").getValue().toString()) );
+                    viewLogo.setBackground(drawableLogo);
+
+                }catch (Exception e){
+                    GradientDrawable drawableLogo = (GradientDrawable) viewLogo.getBackground();
+                    drawableLogo.setColor( activity.getResources().getColor(R.color.colorPrimary) );
+                    viewLogo.setBackground(drawableLogo);
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+        viewLogo.setText(postagem.getMateria().substring(0,1).toUpperCase());
 
         return view;
     }

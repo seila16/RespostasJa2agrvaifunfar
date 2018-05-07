@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.MultiAutoCompleteTextView;
@@ -40,6 +41,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.lang.reflect.Array;
 import java.security.spec.PSSParameterSpec;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -73,6 +75,9 @@ public class CreatePost extends AppCompatActivity {
     private StorageReference storageReference;
     private byte[] fotoBinario;
 
+    private ArrayList data ;
+    private ArrayAdapter arrayAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +92,11 @@ public class CreatePost extends AppCompatActivity {
         materia = findViewById(R.id.postMateria);
         titulo = findViewById(R.id.postTitle);
         url = findViewById(R.id.postUrl);
+
+        data = new ArrayList();
+        arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_expandable_list_item_1, data);
+        criaMaterias();
+        materia.setAdapter(arrayAdapter);
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
@@ -255,6 +265,28 @@ public class CreatePost extends AppCompatActivity {
 
 
 
+    }
+
+    private ArrayList criaMaterias(){
+        DatabaseReference materiaRef = FirebaseDatabase.getInstance().getReference()
+                .child("materias");
+        materiaRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                data.clear();
+                for (DataSnapshot dataS : dataSnapshot.getChildren()){
+                    data.add(dataS.child("nome").getValue().toString());
+                }
+                arrayAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        return null;
     }
 
 }
