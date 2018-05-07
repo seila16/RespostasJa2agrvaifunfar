@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -39,6 +40,9 @@ public class MainActivity extends AppCompatActivity
 
 
 
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +53,7 @@ public class MainActivity extends AppCompatActivity
 
         //primeiro fragment que vai aparecer na tela
         menuList();
+
 
     }
 

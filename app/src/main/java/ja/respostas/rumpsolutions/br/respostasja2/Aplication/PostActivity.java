@@ -37,9 +37,15 @@ public class PostActivity extends AppCompatActivity {
     private String postID;
     private DatabaseReference databaseReference;
     private StorageReference storageRef;
+    private DatabaseReference imgReference;
 
     private Usuario postador;
     private Postagem postagem;
+    private String urlFotoLogado;
+    private TextView viewNick;
+    private TextView viewMateria;
+    private ImageView imageUser;
+    private TextView exURl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,18 +66,26 @@ public class PostActivity extends AppCompatActivity {
         databaseReference.addListenerForSingleValueEvent(listenerDadosPost());
 
 
+        imgReference = FirebaseDatabase.getInstance().getReference().child("postagens");
+
 
     }
 
+
+   //findar os negocio do xml
     private void initElements() {
         viewTitulo = findViewById(R.id.exTitulo);
         viewConteudo = findViewById(R.id.exConteudo);
         viewImage = findViewById(R.id.exImage);
         viewUrl = findViewById(R.id.exURL);
+        viewMateria = findViewById(R.id.viewMateria);
+        viewNick = findViewById(R.id.viewNick);
+        imageUser = findViewById(R.id.image_user);
+        exURl = findViewById(R.id.exURL);
     }
 
 
-
+    //colocar os dados nas views
     private ValueEventListener listenerDadosPost() {
         return new ValueEventListener() {
             @Override
@@ -82,6 +96,9 @@ public class PostActivity extends AppCompatActivity {
                     viewTitulo.setText(postagem.getTitulo());
                     viewConteudo.setText(postagem.getConteudo());
                     viewUrl.setText(postagem.getUrl());
+                    usuarioPostado();
+                    viewMateria.setText(postagem.getMateria());
+                    exURl.setText(postagem.getUrl());
                 }catch (Exception e){
                     Log.e("Erro", "Erro ao carregar dados", e);
                 }
@@ -94,6 +111,25 @@ public class PostActivity extends AppCompatActivity {
         };
     }
 
+    //como colocar imagem dentro do quadrado da tela de post alem de que isso aqui também faz aparecer o nome do cara.
+    public void usuarioPostado(){
+        Usuario usuarioPost = new Usuario(postagem.getUsuario());
+        usuarioPost.getReference().addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                urlFotoLogado = dataSnapshot.child("foto").getValue().toString();
+                Glide.with(PostActivity.this).load(urlFotoLogado).into(imageUser);
+                imageUser.setVisibility(View.VISIBLE);
+                viewNick.setText(dataSnapshot.child("nome").getValue().toString());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -115,6 +151,7 @@ public class PostActivity extends AppCompatActivity {
         finish();
     }
 
+    //pegar imagem do storage do google
     public void getImage() {
         try{
             storageRef.child("posts/"+postID+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {

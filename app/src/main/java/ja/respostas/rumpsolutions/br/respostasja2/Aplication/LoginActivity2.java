@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -48,6 +49,7 @@ public class LoginActivity2 extends AppCompatActivity implements GoogleApiClient
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthListener;
     private Funcoes funcoes = new Funcoes();
+    private ProgressBar progressBar;
 
     private final String TAG = "Login Activity";
 
@@ -68,6 +70,7 @@ public class LoginActivity2 extends AppCompatActivity implements GoogleApiClient
         edit_senha = findViewById(R.id.edit_senha);
         btn_cadastrar = findViewById(R.id.btn_cadastrar2);
         btn_logar = findViewById(R.id.btn_logar2);
+        progressBar = findViewById(R.id.progressBar);
 
 
         btn_logar.setOnClickListener(realizarLogin());
@@ -180,12 +183,16 @@ public class LoginActivity2 extends AppCompatActivity implements GoogleApiClient
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount signInAccount) {
+        progressBar.setVisibility(View.VISIBLE);
+        singG.setVisibility(View.GONE);
+
         AuthCredential credential = GoogleAuthProvider.getCredential(signInAccount.getIdToken(),null);
         firebaseAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()){
-
+                    progressBar.setVisibility(View.GONE);
+                    singG.setVisibility(View.VISIBLE);
                 }
             }
         });

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -31,20 +32,25 @@ public class ListFragment extends Fragment {
     private DatabaseReference reference;
     private ArrayList<Postagem> postagens;
     private AdapterList adapterList;
+    private ProgressBar progressBar;
 
     private String filtroMateria;
 
     public ListFragment() {
 
+
     }
+
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_list, container, false);
-
+        final ProgressBar progressBar = view.findViewById(R.id.progB);
         reference = FirebaseDatabase.getInstance().getReference().child("postagens");
         postagens = new ArrayList<>();
         try {
@@ -54,7 +60,6 @@ public class ListFragment extends Fragment {
         }catch (Exception e){
 
         }
-
 
 
         ListView listView = view.findViewById(R.id.listPostagens);
@@ -68,6 +73,7 @@ public class ListFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 postagens.clear();
+                progressBar.setVisibility(View.VISIBLE);
                 for (DataSnapshot data : dataSnapshot.getChildren()){
 
                     Postagem postagem = data.getValue(Postagem.class);
@@ -76,6 +82,9 @@ public class ListFragment extends Fragment {
                 }
                 Collections.reverse(postagens);
                 adapterList.notifyDataSetChanged();
+
+                progressBar.setVisibility(View.GONE);
+
             }
 
             @Override
