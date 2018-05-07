@@ -76,7 +76,11 @@ public class AdapterList extends BaseAdapter {
         viewTitulo.setText(postagem.getTitulo());
 
         TextView viewConteudo = view.findViewById(R.id.adapter_resumo);
-        viewConteudo.setText(postagem.getConteudo());
+        if (postagem.getConteudo().isEmpty()){
+            viewConteudo.setText("Conteúdo na imagem...");
+        }else{
+            viewConteudo.setText(postagem.getConteudo());
+        }
 
         //hora
         final TextView viewHora = view.findViewById(R.id.adapter_time);

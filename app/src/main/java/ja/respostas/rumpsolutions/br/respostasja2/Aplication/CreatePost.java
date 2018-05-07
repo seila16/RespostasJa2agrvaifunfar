@@ -151,9 +151,18 @@ public class CreatePost extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         switch (id){
             case R.id.post_post:
-                writeNewPostagem(user.getIdUser(),"teste",titulo.getText().toString(),conteudo.getText().toString(), hora, url.getText().toString(), this.fotoBinario);
-                funcoes.toast(this,"Pergunta postada");
-                finish();
+                if (!(titulo.getText().toString().isEmpty())) {
+                    if (!(conteudo.getText().toString().isEmpty()) || this.fotoBinario != null) {
+                        writeNewPostagem(user.getIdUser(), materia.getSelectedItem().toString(), titulo.getText().toString(), conteudo.getText().toString(), hora, url.getText().toString(), this.fotoBinario);
+                        funcoes.toast(this,"Pergunta postada");
+                        finish();
+                    } else {
+                        conteudo.setError("Digite um conteúdo para postagem.");
+                    }
+                }else{
+                    titulo.setError("Campo não pode ficar vazio.");
+                }
+
                 break;
             case R.id.post_imagem:
                 addImage();

@@ -34,7 +34,7 @@ public class ListFragment extends Fragment {
     private AdapterList adapterList;
     private ProgressBar progressBar;
 
-    private String filtroMateria;
+    private String filtroMateria = "";
 
     public ListFragment() {
 
@@ -56,7 +56,6 @@ public class ListFragment extends Fragment {
         try {
             Bundle filtroBundle = getArguments();
             filtroMateria = filtroBundle.getString("MATERIA");
-            Toast.makeText(getActivity(), filtroMateria, Toast.LENGTH_SHORT).show();
         }catch (Exception e){
 
         }
@@ -76,8 +75,13 @@ public class ListFragment extends Fragment {
                 progressBar.setVisibility(View.VISIBLE);
                 for (DataSnapshot data : dataSnapshot.getChildren()){
 
-                    Postagem postagem = data.getValue(Postagem.class);
-                    postagens.add(postagem);
+                    if (data.child("materia").getValue().toString().equals(filtroMateria)){
+                        Postagem postagem = data.getValue(Postagem.class);
+                        postagens.add(postagem);
+                    }else if (filtroMateria.isEmpty()){
+                        Postagem postagem = data.getValue(Postagem.class);
+                        postagens.add(postagem);
+                    }
 
                 }
                 Collections.reverse(postagens);

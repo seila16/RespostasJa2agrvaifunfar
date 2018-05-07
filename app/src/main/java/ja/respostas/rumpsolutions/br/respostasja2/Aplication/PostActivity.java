@@ -117,10 +117,14 @@ public class PostActivity extends AppCompatActivity {
         usuarioPost.getReference().addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                urlFotoLogado = dataSnapshot.child("foto").getValue().toString();
-                Glide.with(PostActivity.this).load(urlFotoLogado).into(imageUser);
-                imageUser.setVisibility(View.VISIBLE);
-                viewNick.setText(dataSnapshot.child("nome").getValue().toString());
+                try {
+                    urlFotoLogado = dataSnapshot.child("foto").getValue().toString();
+                    Glide.with(PostActivity.this).load(urlFotoLogado).into(imageUser);
+                    imageUser.setVisibility(View.VISIBLE);
+                    viewNick.setText(dataSnapshot.child("nome").getValue().toString());
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
 
             @Override
