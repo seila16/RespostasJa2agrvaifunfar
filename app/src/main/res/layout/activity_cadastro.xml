@@ -77,23 +77,37 @@
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
         android:text="Confirmar"
-        app:layout_constraintEnd_toEndOf="@+id/cadastro_senha"
-        app:layout_constraintStart_toStartOf="@+id/cadastro_senha"
-        app:layout_constraintTop_toBottomOf="@+id/cadastro_senha" />
+        app:layout_constraintEnd_toEndOf="@+id/check_Confirm"
+        app:layout_constraintStart_toStartOf="@+id/check_Confirm"
+        app:layout_constraintTop_toBottomOf="@+id/check_Confirm" />
 
     <TextView
         android:id="@+id/cadastro_cancelar"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="17dp"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:text="Cancelar"
         app:layout_constraintEnd_toEndOf="@+id/cadastro_concluir"
         app:layout_constraintStart_toStartOf="@+id/cadastro_concluir"
         app:layout_constraintTop_toBottomOf="@+id/cadastro_concluir" />
+
+    <CheckBox
+        android:id="@+id/check_Confirm"
+        android:layout_width="213dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="9dp"
+        android:text="Eu aceito os termos de uso"
+        app:layout_constraintEnd_toEndOf="@+id/cadastro_senha"
+        app:layout_constraintStart_toStartOf="@+id/cadastro_senha"
+        app:layout_constraintTop_toBottomOf="@+id/cadastro_senha" />
 </android.support.constraint.ConstraintLayout>
