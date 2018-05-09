@@ -1,5 +1,6 @@
 package ja.respostas.rumpsolutions.br.respostasja2.funcoes;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.Snackbar;
@@ -40,4 +41,6 @@ public class Funcoes {
         Snackbar.make(view, s, Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
     }
+
+
 }

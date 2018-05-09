@@ -1,13 +1,18 @@
 package ja.respostas.rumpsolutions.br.respostasja2.Aplication;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -51,6 +56,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ja.respostas.rumpsolutions.br.respostasja2.Manifest;
 import ja.respostas.rumpsolutions.br.respostasja2.R;
 import ja.respostas.rumpsolutions.br.respostasja2.funcoes.Funcoes;
 
@@ -58,6 +64,7 @@ public class CreatePost extends AppCompatActivity {
 
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 15973;
     private static final String TAG = "CreatPost";
+    private static final int REQUEST_PERMISSION_CODE = 333;
     private Funcoes funcoes = new Funcoes();
     private DatabaseReference databaseReference;
     private EditText conteudo;
@@ -133,6 +140,34 @@ public class CreatePost extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        switch (requestCode){
+            case REQUEST_PERMISSION_CODE:
+                int k = 0;
+                for (int i = 0; i< permissions.length; i++){
+                    if (permissions[i].equalsIgnoreCase(Manifest.permission.CAMERA)
+                            && grantResults[i] == PackageManager.PERMISSION_GRANTED){
+                        k += 1;
+                    }
+
+                    if (permissions[i].equalsIgnoreCase(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            && grantResults[i] == PackageManager.PERMISSION_GRANTED){
+                        k += 1;
+                    }
+
+                    if (permissions[i].equalsIgnoreCase(Manifest.permission.READ_EXTERNAL_STORAGE)
+                            && grantResults[i] == PackageManager.PERMISSION_GRANTED){
+                        k += 1;
+                    }
+                }
+
+                if (k == 3) addImage();
+        }
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(android.view.Menu menu) {
@@ -165,13 +200,20 @@ public class CreatePost extends AppCompatActivity {
 
                 break;
             case R.id.post_imagem:
-                addImage();
+                try{
+                    addImage();
+                }catch (Exception e){
+                    permissions();
+                }
+
+
                 break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    //abre camera e cria a imagem
     private void addImage() {
         File file = new File(Environment.getExternalStorageDirectory() + "/imagePost.jpg");
         Uri outputFileUri = Uri.fromFile(file);
@@ -180,6 +222,7 @@ public class CreatePost extends AppCompatActivity {
         startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
     }
 
+    //recuperar dados da foto tirada
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         System.gc(); // garbage colector
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
@@ -213,6 +256,7 @@ public class CreatePost extends AppCompatActivity {
         }
     }
 
+    //Seta a foto com array de bytes necessarios
     private void setFotoBinario(byte[] fotoBinario){
         if (fotoBinario != null) {
             this.fotoBinario = fotoBinario;
@@ -220,7 +264,7 @@ public class CreatePost extends AppCompatActivity {
             Toast.makeText(this, "Nenhuma imagem selecionada.", Toast.LENGTH_SHORT).show();
     }
 
-
+    //inicia criação de nova postagem
     private void writeNewPostagem(String usuario, String materia, String titulo, String conteudo, String hora, String url, byte[] fotoBinario){
 
         //cria uid da postagem
@@ -276,6 +320,7 @@ public class CreatePost extends AppCompatActivity {
 
     }
 
+    //cria arraylist com materias
     private ArrayList criaMaterias(){
         DatabaseReference materiaRef = FirebaseDatabase.getInstance().getReference()
                 .child("materias");
@@ -296,6 +341,77 @@ public class CreatePost extends AppCompatActivity {
         });
 
         return null;
+    }
+
+    //solicita permissoes para camera
+    public void permissions(){
+        permissionCamera();
+        permissionWrite();
+        permissionRead();
+    }
+
+    private void permissionCamera() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)){
+
+                callDialog("É preciso permitir para abrir a câmera.", new String[]{Manifest.permission.CAMERA});
+
+            }else{
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA} ,REQUEST_PERMISSION_CODE);
+            }
+
+        }else{
+
+        }
+    }
+
+    private void permissionWrite() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+
+                callDialog("É preciso permitir para a gravação da fotos.", new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE});
+
+            }else{
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE} ,REQUEST_PERMISSION_CODE);
+            }
+
+        }else{
+
+        }
+    }
+
+    private void permissionRead() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)){
+
+                callDialog("É preciso permitir para realizar as a leitura da foto tirada.", new String[]{Manifest.permission.READ_EXTERNAL_STORAGE});
+
+            }else{
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE} ,REQUEST_PERMISSION_CODE);
+            }
+
+        }else{
+
+        }
+    }
+
+    public void callDialog(String mensagem, final String[] permissions){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Permissões");
+        builder.setMessage(mensagem);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                ActivityCompat.requestPermissions(CreatePost.this, permissions, REQUEST_PERMISSION_CODE);
+            }
+        });
+        builder.setNegativeButton("Cancelar", null);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
 }

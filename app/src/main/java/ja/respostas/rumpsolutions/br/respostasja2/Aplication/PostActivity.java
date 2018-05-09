@@ -7,10 +7,14 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.github.chrisbanes.photoview.PhotoViewAttacher;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -38,6 +42,7 @@ public class PostActivity extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private StorageReference storageRef;
     private DatabaseReference imgReference;
+    private ProgressBar progressBarPost;
 
     private Usuario postador;
     private Postagem postagem;
@@ -82,6 +87,7 @@ public class PostActivity extends AppCompatActivity {
         viewNick = findViewById(R.id.viewNick);
         imageUser = findViewById(R.id.image_user);
         exURl = findViewById(R.id.exURL);
+        progressBarPost = findViewById(R.id.progressBarPost);
     }
 
 
@@ -118,10 +124,24 @@ public class PostActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 try {
-                    urlFotoLogado = dataSnapshot.child("foto").getValue().toString();
-                    Glide.with(PostActivity.this).load(urlFotoLogado).into(imageUser);
-                    imageUser.setVisibility(View.VISIBLE);
-                    viewNick.setText(dataSnapshot.child("nome").getValue().toString());
+                    //carrega image da postagem
+                    try {
+                        urlFotoLogado = dataSnapshot.child("foto").getValue().toString();
+                        Glide.with(PostActivity.this)
+                                .load(urlFotoLogado)
+                                .into(imageUser);
+
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+
+                    //carrega nome do usuario que postou
+                    if (dataSnapshot.child("apelido").exists()){
+                        viewNick.setText(dataSnapshot.child("apelido").getValue().toString());
+                    }else{
+                        viewNick.setText(dataSnapshot.child("nome").getValue().toString());
+                    }
+
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -161,10 +181,25 @@ public class PostActivity extends AppCompatActivity {
             storageRef.child("posts/"+postID+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
-
-                    try{
+                   try{
+                        progressBarPost.setVisibility(View.VISIBLE);
                         imageURL = uri.toString();
-                        Glide.with(PostActivity.this).load(imageURL).into(viewImage);
+                        Glide
+                                .with(PostActivity.this)
+                                .load(imageURL)
+                                .listener(new RequestListener<String, GlideDrawable>() {
+                                    @Override
+                                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                        return false;
+                                    }
+
+                                    @Override
+                                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                        progressBarPost.setVisibility(View.GONE);
+                                        return false;
+                                    }
+                                })
+                                .into(viewImage);
                         viewImage.setVisibility(View.VISIBLE);
                     }catch (Exception e){
                         e.printStackTrace();
