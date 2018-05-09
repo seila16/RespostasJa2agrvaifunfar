@@ -3,6 +3,7 @@ package ja.respostas.rumpsolutions.br.respostasja2.Aplication;
 import android.content.ClipData;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
@@ -22,7 +23,16 @@ import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.OptionalPendingResult;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -32,12 +42,12 @@ import ja.respostas.rumpsolutions.br.respostasja2.adapters.AdapterMaterial;
 import ja.respostas.rumpsolutions.br.respostasja2.funcoes.Funcoes;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.OnConnectionFailedListener {
 
     private DatabaseReference reference;
     private FirebaseAuth mAuth;
     private Funcoes funcoes = new Funcoes();
-
+    private GoogleApiClient googleApiClient;
 
 
 
@@ -53,6 +63,11 @@ public class MainActivity extends AppCompatActivity
 
         //primeiro fragment que vai aparecer na tela
         menuList();
+
+        //Login silencioso
+         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+
+         googleApiClient = new GoogleApiClient.Builder(this) .enableAutoManage(this, this).addApi(Auth.GOOGLE_SIGN_IN_API,gso).build();
 
 
     }
@@ -180,12 +195,54 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+
+
+
+
     @Override
     protected void onStart() {
-        super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        Usuario usuario = new Usuario(this, currentUser);
-        reference = usuario.getReference();
+            super.onStart();
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+            if (currentUser != null){
+                Usuario usuario = new Usuario(this, currentUser);
+                reference = usuario.getReference();
+            }else {
+                deslogadoEntrando();
+            }
+    }
+
+    private void deslogadoEntrando(){
+        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(googleApiClient);
+        if (opr.isDone()){
+            GoogleSignInResult result = opr.get();
+            handleSignResult(result);
+        }else{
+            opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
+                @Override
+                public void onResult(@NonNull GoogleSignInResult googleSignInResult) {
+                    handleSignResult(googleSignInResult);
+                }
+            });
+        }
+    }
+
+    private void handleSignResult(GoogleSignInResult result) {
+        if (result.isSuccess()){
+
+            GoogleSignInAccount account = result.getSignInAccount();
+
+
+        }else{
+
+            goLoginScreen();
+            
+        }
+    }
+
+    private void goLoginScreen() {
+        Intent intent = new Intent(this, LoginActivity2.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     public boolean onCreateOpetionsMenu(Menu menu) {
@@ -196,6 +253,11 @@ public class MainActivity extends AppCompatActivity
         sv.setOnQueryTextListener(new SearchFiltro());
 
         return (true);
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 
     public class SearchFiltro implements SearchView.OnQueryTextListener{
@@ -213,6 +275,10 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
     }
+
+
+
+
 
 
 }

@@ -72,7 +72,6 @@ public class ListFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 postagens.clear();
-                progressBar.setVisibility(View.VISIBLE);
                 for (DataSnapshot data : dataSnapshot.getChildren()){
 
                     if (data.child("materia").getValue().toString().equals(filtroMateria)){

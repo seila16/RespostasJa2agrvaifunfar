@@ -1,11 +1,14 @@
 package ja.respostas.rumpsolutions.br.respostasja2.Autenticacao;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +22,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import ja.respostas.rumpsolutions.br.respostasja2.Aplication.LoginActivity2;
+import ja.respostas.rumpsolutions.br.respostasja2.Aplication.MainActivity;
 import ja.respostas.rumpsolutions.br.respostasja2.R;
 
 public class CadastroActivity extends AppCompatActivity {
@@ -26,9 +30,9 @@ public class CadastroActivity extends AppCompatActivity {
     private EditText cadastro_nome;
     private EditText cadastro_email;
     private EditText cadastro_senha;
-
+    private CheckBox chBox;
     private Button cadastro_concluir;
-
+    private AlertDialog alerta;
     private TextView cadastro_cancelar;
 
     private FirebaseAuth mAuth;
@@ -40,9 +44,10 @@ public class CadastroActivity extends AppCompatActivity {
         setContentView(R.layout.activity_cadastro);
 
         initiElements();
-
+        chBox = findViewById(R.id.check_Confirm);
         cadastro_concluir.setOnClickListener(actionConcluir());
         cadastro_cancelar.setOnClickListener(actionCancelar());
+        checarBox();
     }
 
     private View.OnClickListener actionCancelar() {
@@ -53,6 +58,37 @@ public class CadastroActivity extends AppCompatActivity {
             }
         };
     }
+
+
+   private void alertar(){
+       AlertDialog.Builder builder = new AlertDialog.Builder(this);
+       builder.setTitle("Termos de uso e compromisso");
+       builder.setMessage("Deseje ler os termos de uso e compromisso ou somente aceitar e ler depois?");
+       builder.setPositiveButton("Ler", new DialogInterface.OnClickListener() {
+           @Override
+           public void onClick(DialogInterface dialogInterface, int i) {
+               //aqui a gente vai jogar ele pra activity do termo de uso.
+               Toast.makeText(CadastroActivity.this,"Indo ler o texto",Toast.LENGTH_SHORT).show();
+           }
+       });
+
+       builder.setNegativeButton("Somente aceitar", new DialogInterface.OnClickListener() {
+           @Override
+           public void onClick(DialogInterface dialogInterface, int i) {
+               Toast.makeText(CadastroActivity.this,"Termos aceitos",Toast.LENGTH_SHORT).show();
+           }
+       });
+
+       alerta = builder.create();
+       alerta.show();
+   }
+
+
+   private void checarBox() {
+       if (chBox.isSelected()) {
+           alertar();
+       }
+   }
 
     //função botao concluir
     private View.OnClickListener actionConcluir() {

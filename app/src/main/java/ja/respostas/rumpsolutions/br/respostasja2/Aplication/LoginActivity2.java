@@ -166,9 +166,13 @@ public class LoginActivity2 extends AppCompatActivity implements GoogleApiClient
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode,resultCode,data);
-        if(requestCode == SIGN_INC_CODE){
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            handleSignResult(result);
+        try {
+            if (requestCode == SIGN_INC_CODE) {
+                GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+                handleSignResult(result);
+            }
+        }catch (Exception e){
+            Toast.makeText(this,"Login Failed",Toast.LENGTH_SHORT).show();
         }
     }
 
