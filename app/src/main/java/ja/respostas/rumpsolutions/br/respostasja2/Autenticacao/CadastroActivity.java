@@ -45,9 +45,15 @@ public class CadastroActivity extends AppCompatActivity {
 
         initiElements();
         chBox = findViewById(R.id.check_Confirm);
+        chBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checarBox();
+            }
+        });
         cadastro_concluir.setOnClickListener(actionConcluir());
         cadastro_cancelar.setOnClickListener(actionCancelar());
-        checarBox();
+
     }
 
     private View.OnClickListener actionCancelar() {
@@ -63,7 +69,7 @@ public class CadastroActivity extends AppCompatActivity {
    private void alertar(){
        AlertDialog.Builder builder = new AlertDialog.Builder(this);
        builder.setTitle("Termos de uso e compromisso");
-       builder.setMessage("Deseje ler os termos de uso e compromisso ou somente aceitar e ler depois?");
+       builder.setMessage("Deseja ler os termos de uso e compromisso ou somente aceitar?");
        builder.setPositiveButton("Ler", new DialogInterface.OnClickListener() {
            @Override
            public void onClick(DialogInterface dialogInterface, int i) {
@@ -79,13 +85,13 @@ public class CadastroActivity extends AppCompatActivity {
            }
        });
 
-       alerta = builder.create();
-       alerta.show();
+       AlertDialog alert = builder.create();
+       alert.show();
    }
 
 
    private void checarBox() {
-       if (chBox.isSelected()) {
+       if (chBox.isChecked()) {
            alertar();
        }
    }

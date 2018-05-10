@@ -28,6 +28,9 @@ public class Usuario {
 
     private Funcoes funcoes = new Funcoes();
 
+    public Usuario(){
+
+    }
 
     public Usuario(Context context,FirebaseUser currentUser){
         this.context = context;

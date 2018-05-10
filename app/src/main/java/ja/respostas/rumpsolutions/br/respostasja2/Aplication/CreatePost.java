@@ -100,6 +100,8 @@ public class CreatePost extends AppCompatActivity {
         titulo = findViewById(R.id.postTitle);
         url = findViewById(R.id.postUrl);
 
+
+
         data = new ArrayList();
         arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_expandable_list_item_1, data);
         criaMaterias();

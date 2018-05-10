@@ -65,9 +65,15 @@ public class MainActivity extends AppCompatActivity
         menuList();
 
         //Login silencioso
-         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+         GoogleSignInOptions gso = new GoogleSignInOptions
+                 .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                 .requestEmail()
+                 .build();
 
-         googleApiClient = new GoogleApiClient.Builder(this) .enableAutoManage(this, this).addApi(Auth.GOOGLE_SIGN_IN_API,gso).build();
+         googleApiClient = new GoogleApiClient.Builder(this)
+                 .enableAutoManage(this, this)
+                 .addApi(Auth.GOOGLE_SIGN_IN_API,gso)
+                 .build();
 
 
     }
@@ -244,6 +250,7 @@ public class MainActivity extends AppCompatActivity
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
+
 
     public boolean onCreateOpetionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);

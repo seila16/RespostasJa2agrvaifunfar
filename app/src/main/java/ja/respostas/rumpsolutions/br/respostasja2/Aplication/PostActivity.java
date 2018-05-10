@@ -51,6 +51,8 @@ public class PostActivity extends AppCompatActivity {
     private TextView viewMateria;
     private ImageView imageUser;
     private TextView exURl;
+    private TextView logadoNome;
+    private ImageView logadoFoto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,11 +75,12 @@ public class PostActivity extends AppCompatActivity {
 
         imgReference = FirebaseDatabase.getInstance().getReference().child("postagens");
 
+        preencheComentarios();
+
 
     }
 
-
-   //findar os negocio do xml
+    //findar os negocio do xml
     private void initElements() {
         viewTitulo = findViewById(R.id.exTitulo);
         viewConteudo = findViewById(R.id.exConteudo);
@@ -88,10 +91,58 @@ public class PostActivity extends AppCompatActivity {
         imageUser = findViewById(R.id.image_user);
         exURl = findViewById(R.id.exURL);
         progressBarPost = findViewById(R.id.progressBarPost);
+
+        logadoFoto = findViewById(R.id.ulFoto);
+        logadoNome = findViewById(R.id.ulNome);
+
     }
 
+    // // Inicia Cabeçalho
 
-    //colocar os dados nas views
+    //como colocar imagem dentro do quadrado da tela de post
+    // alem de que isso aqui também faz aparecer o nome do cara.
+    public void usuarioPostado() {
+        Usuario usuarioPost = new Usuario(postagem.getUsuario());
+        usuarioPost.getReference().addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                try {
+                    //carrega image da postagem
+                    try {
+                        urlFotoLogado = dataSnapshot.child("foto").getValue().toString();
+                        Glide.with(PostActivity.this)
+                                .load(urlFotoLogado)
+                                .into(imageUser);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    //carrega nome do usuario que postou
+                    if (dataSnapshot.child("apelido").exists()) {
+                        viewNick.setText(dataSnapshot.child("apelido").getValue().toString());
+                    } else {
+                        viewNick.setText(dataSnapshot.child("nome").getValue().toString());
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    // // Finaliza Cabeçado
+
+    // // Inicia Postagem
+
+    //Preencher campos de dados da postagem
     private ValueEventListener listenerDadosPost() {
         return new ValueEventListener() {
             @Override
@@ -105,7 +156,7 @@ public class PostActivity extends AppCompatActivity {
                     usuarioPostado();
                     viewMateria.setText(postagem.getMateria());
                     exURl.setText(postagem.getUrl());
-                }catch (Exception e){
+                } catch (Exception e) {
                     Log.e("Erro", "Erro ao carregar dados", e);
                 }
             }
@@ -117,71 +168,13 @@ public class PostActivity extends AppCompatActivity {
         };
     }
 
-    //como colocar imagem dentro do quadrado da tela de post alem de que isso aqui também faz aparecer o nome do cara.
-    public void usuarioPostado(){
-        Usuario usuarioPost = new Usuario(postagem.getUsuario());
-        usuarioPost.getReference().addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                try {
-                    //carrega image da postagem
-                    try {
-                        urlFotoLogado = dataSnapshot.child("foto").getValue().toString();
-                        Glide.with(PostActivity.this)
-                                .load(urlFotoLogado)
-                                .into(imageUser);
-
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-
-                    //carrega nome do usuario que postou
-                    if (dataSnapshot.child("apelido").exists()){
-                        viewNick.setText(dataSnapshot.child("apelido").getValue().toString());
-                    }else{
-                        viewNick.setText(dataSnapshot.child("nome").getValue().toString());
-                    }
-
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-    }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()){
-            case android.R.id.home:
-                finish();
-                break;
-
-            default:break;
-
-        }
-
-        return true;
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
-    }
-
     //pegar imagem do storage do google
     public void getImage() {
-        try{
-            storageRef.child("posts/"+postID+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        try {
+            storageRef.child("posts/" + postID + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
-                   try{
+                    try {
                         progressBarPost.setVisibility(View.VISIBLE);
                         imageURL = uri.toString();
                         Glide
@@ -201,13 +194,48 @@ public class PostActivity extends AppCompatActivity {
                                 })
                                 .into(viewImage);
                         viewImage.setVisibility(View.VISIBLE);
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.e("Erro", "Nenhuma imagem recuperada", e);
         }
+    }
+
+    // // Finaliza Postagem
+
+    // //Inicia Comentario
+
+    //preenche campos
+    private void preencheComentarios(){
+
+
+        logadoNome.setText("");
+    }
+
+    // // Finaliza Comentario
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+
+            default:
+                break;
+
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 }

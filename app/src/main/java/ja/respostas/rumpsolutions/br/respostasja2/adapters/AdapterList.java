@@ -63,8 +63,7 @@ public class AdapterList extends BaseAdapter {
 
     @Override
     public View getView(int i, View convertView, ViewGroup viewGroup) {
-        View view = activity.getLayoutInflater()
-                .inflate(R.layout.adaptar_list, viewGroup, false);
+        View view = activity.getLayoutInflater().inflate(R.layout.adaptar_list, viewGroup, false);
 
         Postagem postagem = postagemList.get(i);
         final Usuario usuario = new Usuario(postagem.getUsuario());
