@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
@@ -45,12 +46,13 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.OnConnectionFailedListener {
 
     private DatabaseReference reference;
-    private FirebaseAuth mAuth;
     private Funcoes funcoes = new Funcoes();
     private GoogleApiClient googleApiClient;
 
+    private Usuario usuario;
 
-
+    private FirebaseAuth firebaseAuth;
+    private FirebaseAuth.AuthStateListener firebaseAuthListener;
 
 
     @Override
@@ -58,8 +60,8 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         //criação da estrutura
         setContentView(R.layout.activity_main);
-        mAuth = FirebaseAuth.getInstance();
         initiElements();
+
 
         //primeiro fragment que vai aparecer na tela
         menuList();
@@ -74,6 +76,23 @@ public class MainActivity extends AppCompatActivity
                  .enableAutoManage(this, this)
                  .addApi(Auth.GOOGLE_SIGN_IN_API,gso)
                  .build();
+
+         firebaseAuth = FirebaseAuth.getInstance();
+         firebaseAuthListener = new FirebaseAuth.AuthStateListener() {
+             @Override
+             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null){
+
+                    usuario = new Usuario(MainActivity.this, user);
+
+                }else{
+
+                    goLoginScreen();
+
+                }
+             }
+         };
 
 
     }
@@ -104,6 +123,13 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().setTitle("Respostas Já");
     }
 
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        firebaseAuth.addAuthStateListener(firebaseAuthListener);
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -118,9 +144,6 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-
-        EditText editText = new EditText(this);
-
 
         return true;
     }
@@ -140,6 +163,15 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (firebaseAuthListener != null){
+            firebaseAuth.removeAuthStateListener(firebaseAuthListener);
+        }
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -148,101 +180,41 @@ public class MainActivity extends AppCompatActivity
 
         switch (id){
             case R.id.materia_search:
+                break;
 
+            case R.id.nav_quit:
+                FirebaseAuth.getInstance().signOut();
+                funcoes.abrirActivityUnica(this, LoginActivity2.class);
+                break;
+
+            case R.id.nav_list:
+                menuList();
+                break;
+
+            case R.id.nav_materias:
+                materiasList();
+                break;
         }
 
-
-        if (id == R.id.nav_list) {
-
-            menuList();
-
-        } else if (id == R.id.nav_materias) {
-
-            materiasList();
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_config) {
-
-        } else if (id == R.id.nav_quit) {
-
-            FirebaseAuth.getInstance().signOut();
-            funcoes.abrirActivityUnica(this, LoginActivity2.class);
-
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
     private void menuList() {
+        Fragment ft = new ListFragment();
 
-
-
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment_content, new ListFragment());
-        ft.commit();
-
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_content, ft)
+                .commit();
     }
 
     private void materiasList() {
+        Fragment ft = new MateriaFragment();
 
-
-
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment_content, new MateriaFragment());
-        ft.commit();
-
-
-
-
-    }
-
-
-
-
-
-    @Override
-    protected void onStart() {
-            super.onStart();
-            FirebaseUser currentUser = mAuth.getCurrentUser();
-            if (currentUser != null){
-                Usuario usuario = new Usuario(this, currentUser);
-                reference = usuario.getReference();
-            }else {
-                deslogadoEntrando();
-            }
-    }
-
-    private void deslogadoEntrando(){
-        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(googleApiClient);
-        if (opr.isDone()){
-            GoogleSignInResult result = opr.get();
-            handleSignResult(result);
-        }else{
-            opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
-                @Override
-                public void onResult(@NonNull GoogleSignInResult googleSignInResult) {
-                    handleSignResult(googleSignInResult);
-                }
-            });
-        }
-    }
-
-    private void handleSignResult(GoogleSignInResult result) {
-        if (result.isSuccess()){
-
-            GoogleSignInAccount account = result.getSignInAccount();
-
-
-        }else{
-
-            goLoginScreen();
-            
-        }
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_content, ft)
+                .commit();
     }
 
     private void goLoginScreen() {
@@ -251,36 +223,9 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
-
-    public boolean onCreateOpetionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-
-        getMenuInflater().inflate(R.menu.search_menu, menu);
-        SearchView sv = (SearchView) menu.findItem(R.id.search_materia).getActionView();
-        sv.setOnQueryTextListener(new SearchFiltro());
-
-        return (true);
-    }
-
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
-    }
-
-    public class SearchFiltro implements SearchView.OnQueryTextListener{
-
-        @Override
-        public boolean onQueryTextSubmit(String s) {
-            return false;
-        }
-
-        @Override
-        public boolean onQueryTextChange(String text) {
-            if (text.toString() != null && !text.toString().equals("")){
-             //   AdapterMaterial adapter = new AdapterMaterial(MainActivity.this)
-            }
-            return true;
-        }
     }
 
 

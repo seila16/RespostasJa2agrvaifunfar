@@ -85,10 +85,6 @@ public class MateriaFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
                 Fragment sFragment = new ListFragment();
-                Bundle bundle = new Bundle();
-                bundle.putString("MATERIA", materiasList.get(i).getNome());
-                sFragment.setArguments(bundle);
-
                 getActivity().getSupportFragmentManager()
                         .beginTransaction().replace(R.id.fragment_content, sFragment).commit();
 

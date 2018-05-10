@@ -34,6 +34,8 @@ public class ListFragment extends Fragment {
     private AdapterList adapterList;
     private ProgressBar progressBar;
 
+    private Bundle filtroBundle;
+
     private String filtroMateria = "";
 
     public ListFragment() {
@@ -53,8 +55,9 @@ public class ListFragment extends Fragment {
         final ProgressBar progressBar = view.findViewById(R.id.progB);
         reference = FirebaseDatabase.getInstance().getReference().child("postagens");
         postagens = new ArrayList<>();
+        filtroBundle = getArguments();
+
         try {
-            Bundle filtroBundle = getArguments();
             filtroMateria = filtroBundle.getString("MATERIA");
         }catch (Exception e){
 

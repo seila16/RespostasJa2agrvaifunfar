@@ -29,8 +29,8 @@ import ja.respostas.rumpsolutions.br.respostasja2.R;
 
 public class AdapterList extends BaseAdapter {
 
-    private final List<Postagem> postagemList;
-    private final Activity activity;
+    private List<Postagem> postagemList;
+    private Activity activity;
 
     private String nome;
 

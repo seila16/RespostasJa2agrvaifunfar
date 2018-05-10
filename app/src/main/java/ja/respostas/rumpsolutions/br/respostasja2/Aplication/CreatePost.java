@@ -151,21 +151,22 @@ public class CreatePost extends AppCompatActivity {
                 for (int i = 0; i< permissions.length; i++){
                     if (permissions[i].equalsIgnoreCase(Manifest.permission.CAMERA)
                             && grantResults[i] == PackageManager.PERMISSION_GRANTED){
-                        k += 1;
-                    }
+                        permissionWrite();
+                    }else
 
                     if (permissions[i].equalsIgnoreCase(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                             && grantResults[i] == PackageManager.PERMISSION_GRANTED){
-                        k += 1;
-                    }
+
+                        permissionRead();
+
+                    }else
 
                     if (permissions[i].equalsIgnoreCase(Manifest.permission.READ_EXTERNAL_STORAGE)
                             && grantResults[i] == PackageManager.PERMISSION_GRANTED){
-                        k += 1;
+                        addImage();
                     }
                 }
 
-                if (k == 3) addImage();
         }
 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -206,6 +207,7 @@ public class CreatePost extends AppCompatActivity {
                     addImage();
                 }catch (Exception e){
                     permissions();
+                    e.printStackTrace();
                 }
 
 
@@ -348,8 +350,6 @@ public class CreatePost extends AppCompatActivity {
     //solicita permissoes para camera
     public void permissions(){
         permissionCamera();
-        permissionWrite();
-        permissionRead();
     }
 
     private void permissionCamera() {

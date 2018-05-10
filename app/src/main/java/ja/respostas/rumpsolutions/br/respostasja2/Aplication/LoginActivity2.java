@@ -33,17 +33,16 @@ import ja.respostas.rumpsolutions.br.respostasja2.funcoes.Funcoes;
 
 public class LoginActivity2 extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
+
+    private GoogleApiClient googleApiClient;
+
     private Button btn_cadastrar;
     private Button btn_logar;
     private FirebaseAuth mAuth;
-    private GoogleApiClient googleApiClient;
+
     private EditText edit_email;
     private EditText edit_senha;
     private Context context;
-    private Usuario usuario;
-    private String emailUser;
-    private String senhaUser;
-    private FirebaseAuth autenticacao;
     private SignInButton singG;
     public static final int SIGN_INC_CODE = 777;
     private FirebaseAuth firebaseAuth;
@@ -61,23 +60,23 @@ public class LoginActivity2 extends AppCompatActivity implements GoogleApiClient
         mAuth = FirebaseAuth.getInstance();
 
         //inicio da configuração do google login
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
-        googleApiClient = new GoogleApiClient.Builder(this).enableAutoManage(this,this).addApi(Auth.GOOGLE_SIGN_IN_API,gso).build();
+        GoogleSignInOptions gso = new GoogleSignInOptions
+                .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+
+        googleApiClient = new GoogleApiClient
+                .Builder(this)
+                .enableAutoManage(this,this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API,gso)
+                .build();
+
+
         //final da configuração do google
 
-        singG = findViewById(R.id.signG);
-        edit_email = findViewById(R.id.edit_email);
-        edit_senha = findViewById(R.id.edit_senha);
-        btn_cadastrar = findViewById(R.id.btn_cadastrar2);
-        btn_logar = findViewById(R.id.btn_logar2);
-        progressBar = findViewById(R.id.progressBar);
-
-
-        btn_logar.setOnClickListener(realizarLogin());
-
-        btn_cadastrar.setOnClickListener(evtBotaoCadastrar());
-
-        singG.setOnClickListener(evtGoogleLogin());
+        initElements();
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -89,6 +88,24 @@ public class LoginActivity2 extends AppCompatActivity implements GoogleApiClient
                 }
             }
         };
+    }
+
+    private void initElements() {
+        singG = findViewById(R.id.signG);
+            singG.setOnClickListener(evtGoogleLogin());
+
+        edit_email = findViewById(R.id.edit_email);
+
+        edit_senha = findViewById(R.id.edit_senha);
+
+        btn_cadastrar = findViewById(R.id.btn_cadastrar2);
+            btn_cadastrar.setOnClickListener(evtBotaoCadastrar());
+
+        btn_logar = findViewById(R.id.btn_logar2);
+            btn_logar.setOnClickListener(realizarLogin());
+
+        progressBar = findViewById(R.id.progressBar);
+
     }
 
     @Override
@@ -108,7 +125,6 @@ public class LoginActivity2 extends AppCompatActivity implements GoogleApiClient
         }
     }
 
-
     private View.OnClickListener evtBotaoCadastrar() {
         return new View.OnClickListener() {
             @Override
@@ -117,7 +133,6 @@ public class LoginActivity2 extends AppCompatActivity implements GoogleApiClient
             }
         };
     }
-
 
     //REALIZAR LOGIN
     private View.OnClickListener realizarLogin() {
@@ -154,9 +169,6 @@ public class LoginActivity2 extends AppCompatActivity implements GoogleApiClient
         };
     }
 
-
-
-
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
@@ -181,7 +193,7 @@ public class LoginActivity2 extends AppCompatActivity implements GoogleApiClient
         if (result.isSuccess()){
             firebaseAuthWithGoogle(result.getSignInAccount());
         }else{
-            Toast.makeText(this,"Não foi possível iniciar a sessão pelo Google+", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Não foi possível iniciar a sessão pelo Google+\n" + result.getStatus(), Toast.LENGTH_SHORT).show();
 
         }
     }
@@ -190,16 +202,20 @@ public class LoginActivity2 extends AppCompatActivity implements GoogleApiClient
         progressBar.setVisibility(View.VISIBLE);
         singG.setVisibility(View.GONE);
 
-        AuthCredential credential = GoogleAuthProvider.getCredential(signInAccount.getIdToken(),null);
-        firebaseAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()){
-                    progressBar.setVisibility(View.GONE);
-                    singG.setVisibility(View.VISIBLE);
-                }
-            }
-        });
+        AuthCredential credential = GoogleAuthProvider
+                .getCredential(signInAccount.getIdToken(),null);
+
+        firebaseAuth
+                .signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (!task.isSuccessful()){
+                            progressBar.setVisibility(View.GONE);
+                            singG.setVisibility(View.VISIBLE);
+                        }
+                    }
+                });
     }
 
     private void goMainScreen() {

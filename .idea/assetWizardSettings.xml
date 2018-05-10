@@ -18,7 +18,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/av/ic_library_books_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/social/ic_school_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -28,8 +28,12 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputName" value="ic_materias" />
+                            <entry key="color" value="35b456" />
+                            <entry key="height" value="32" />
+                            <entry key="outputName" value="ic_melhor_resposta" />
+                            <entry key="overrideSize" value="true" />
                             <entry key="sourceFile" value="C:\Users\rodri" />
+                            <entry key="width" value="32" />
                           </map>
                         </option>
                       </PersistentState>

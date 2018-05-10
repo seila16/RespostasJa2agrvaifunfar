@@ -18,9 +18,8 @@ import java.util.HashMap;
 import ja.respostas.rumpsolutions.br.respostasja2.funcoes.Funcoes;
 
 public class Usuario {
-    private String idUser;
-    private String nome;
     private String email;
+    private String idUser;
     private FirebaseUser currentUser;
     private Context context;
 
@@ -77,21 +76,18 @@ public class Usuario {
                 .child(idUser);
     }
 
-
     public String getIdUser() {
         return this.idUser;
     }
 
-    public String getEmail() {
-        return this.email;
-    }
-
-    public String getNome() {
-        return this.nome;
+    public void setIdUser(String idUser){
+        this.idUser = idUser;
     }
 
     public DatabaseReference getReference() {
         return this.reference;
     }
+
+
 
 }
