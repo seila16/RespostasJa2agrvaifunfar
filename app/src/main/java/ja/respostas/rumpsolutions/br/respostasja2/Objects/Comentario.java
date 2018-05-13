@@ -5,6 +5,7 @@ public class Comentario {
     private String user;
     private String comentario;
     private boolean best;
+    private String key;
 
 
     public String getComentario() {
@@ -18,4 +19,6 @@ public class Comentario {
     public String getUser() {
         return user;
     }
+
+    public String getKey() { return this.key; }
 }

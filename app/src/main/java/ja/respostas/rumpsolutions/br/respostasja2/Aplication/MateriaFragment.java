@@ -79,6 +79,7 @@ public class MateriaFragment extends Fragment {
         return view;
     }
 
+
     private AdapterView.OnItemClickListener selectItem() {
         return new AdapterView.OnItemClickListener() {
             @Override

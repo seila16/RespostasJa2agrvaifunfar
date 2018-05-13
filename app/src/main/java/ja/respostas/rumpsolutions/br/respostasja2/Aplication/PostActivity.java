@@ -1,14 +1,18 @@
 package ja.respostas.rumpsolutions.br.respostasja2.Aplication;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -37,6 +41,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -49,6 +54,7 @@ import java.util.HashMap;
 import ja.respostas.rumpsolutions.br.respostasja2.Objects.Comentario;
 import ja.respostas.rumpsolutions.br.respostasja2.R;
 import ja.respostas.rumpsolutions.br.respostasja2.adapters.AdapterComentario;
+import ja.respostas.rumpsolutions.br.respostasja2.funcoes.Funcoes;
 
 public class PostActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
@@ -57,6 +63,8 @@ public class PostActivity extends AppCompatActivity implements GoogleApiClient.O
     private PhotoView viewImage;
     private TextView viewUrl;
     private String imageURL;
+
+    private Funcoes funcoes = new Funcoes();
 
     private String postID;
     private DatabaseReference databaseReference;
@@ -85,31 +93,42 @@ public class PostActivity extends AppCompatActivity implements GoogleApiClient.O
     private AdapterComentario adapterComent;
     private DatabaseReference comentariosRef;
 
+    private static final String TAG = "PostActivity";
+    private DatabaseReference melhorComentariosRef;
+    private ArrayList<Comentario> bestArrayList;
+    private AdapterComentario adapterComentBest;
+    private ExpandableHeightListView listComentarioBest;
+    private Usuario usuarioPost;
+
+    private String ID_USUARIOLOGADO;
+    private String ID_USUARIOPOST;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
-
-        //recupera a postagem clicada
-        postID = getIntent().getStringExtra("POST");
-        comentarioArrayList = new ArrayList<>();
-
-        //recupera comentarios da postagem
-        comentariosRef = FirebaseDatabase.getInstance().getReference()
-                .child("postagens")
-                .child(postID)
-                .child("comentarios");
-
-        comentariosRef.addValueEventListener(listenerComentarios());
-
-
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         initElements();
 
+        comentarioArrayList = new ArrayList<>();
+        adapterComent = new AdapterComentario(comentarioArrayList, this);
+        listComentario.setExpanded(true);
+        listComentario.setAdapter(adapterComent);
+        listComentario.setOnItemClickListener(onItemClickListener_comentarios());
 
+
+
+        bestArrayList = new ArrayList<>();
+        adapterComentBest = new AdapterComentario(bestArrayList, this);
+        listComentarioBest.setExpanded(true);
+        listComentarioBest.setAdapter(adapterComentBest);
+        listComentarioBest.setOnItemClickListener(onItemClickListener_comentariosBest());
+
+
+        //recupera a postagem clicada
+        postID = getIntent().getStringExtra("POST");
 
         //Login silencioso
         GoogleSignInOptions gso = new GoogleSignInOptions
@@ -130,8 +149,10 @@ public class PostActivity extends AppCompatActivity implements GoogleApiClient.O
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null){
 
-                    usuarioLogado = new Usuario(PostActivity.this, user);
-                    preencheComentarios();
+                    usuarioLogado = new Usuario(user.getUid());
+                    usuarioLogado.getReference().addValueEventListener(recuperaDadosLogado());
+                    ID_USUARIOLOGADO = user.getUid();
+
 
                 }else{
 
@@ -140,6 +161,7 @@ public class PostActivity extends AppCompatActivity implements GoogleApiClient.O
                 }
             }
         };
+
 
 
         //inicia a recuperação da imagem
@@ -152,15 +174,188 @@ public class PostActivity extends AppCompatActivity implements GoogleApiClient.O
                 .child(postID);
         databaseReference.addValueEventListener(listenerDadosPost());
 
-        //seta adapter nos comentarios
-        adapterComent = new AdapterComentario(comentarioArrayList, PostActivity.this);
-        listComentario.setAdapter(adapterComent);
-        listComentario.setExpanded(true);
-        listComentario.setOnItemClickListener(listenerItemComentario());
 
 
-        //seta botao de enviar comentario
-        buttonComentario.setOnClickListener(new View.OnClickListener() {
+        comentariosRef = databaseReference.child("comentarios");
+        atualizaLista();
+
+        melhorComentariosRef = databaseReference.child("best");
+        atualizaListaBest();
+
+        //Listeners
+        buttonComentario.setOnClickListener(onClickListener_btnComentario());
+
+
+
+    }
+
+    private AdapterView.OnItemClickListener onItemClickListener_comentariosBest() {
+        return new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view,int i, long l) {
+
+                final int j = i;
+                if (ID_USUARIOPOST.compareTo(ID_USUARIOLOGADO) == 0){
+
+                    AlertDialog.Builder builder = funcoes.createBuilder(PostActivity.this, "Melhor resposta", "Gostaria de desmarcar a resposta de MELHOR RESPOSTA.");
+                    builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int inter) {
+
+                            marcarComoRespostaSimples(j);
+                        }
+                    });
+                    builder.setNegativeButton("Não", null);
+
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                } else if (ID_USUARIOLOGADO.compareTo(bestArrayList.get(i).getUser()) == 0){
+
+                    AlertDialog.Builder builder = funcoes.createBuilder(PostActivity.this, "Deletar comentário", "Deseja apagar seu comentário?");
+                    builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int inter) {
+
+                            melhorComentariosRef.child(bestArrayList.get(j).getKey()).setValue(null);
+                        }
+                    });
+                    builder.setNegativeButton("Não", null);
+
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+
+                }
+
+
+            }
+        };
+    }
+
+    private void marcarComoRespostaSimples(int i) {
+        try{
+
+            String key = bestArrayList.get(i).getKey();
+
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("key"       , key);
+            map.put("comentario", bestArrayList.get(i).getComentario() );
+            map.put("user"      , bestArrayList.get(i).getUser() );
+            map.put("best"      , false );
+
+
+            comentariosRef.child(key).setValue(map);
+
+            melhorComentariosRef.child(key).setValue(null);
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private AdapterView.OnItemClickListener onItemClickListener_comentarios() {
+        return new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view,int i, long l) {
+
+                final int j = i;
+                Log.i(TAG, "onItemClick: "+comentarioArrayList.get(i).getUser());
+
+                if (ID_USUARIOLOGADO.compareTo(ID_USUARIOPOST) == 0){
+                    AlertDialog.Builder builder = funcoes.createBuilder(PostActivity.this, "Melhor resposta", "Gostaria de marcar a resposta como MELHOR RESPOSTA.");
+
+                    builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int inter) {
+
+                            marcarComoMelhorResposta(j);
+                        }
+                    });
+                    builder.setNegativeButton("Não", null);
+
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+
+                } else if (ID_USUARIOLOGADO.compareTo(comentarioArrayList.get(i).getUser()) == 0){
+
+                    AlertDialog.Builder builder = funcoes.createBuilder(PostActivity.this, "Apagar mensagem", "Deseja apagar esta mensagem?");
+                    builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            comentariosRef.child(comentarioArrayList.get(j).getKey()).setValue(null);
+                        }
+                    });
+                    builder.setNegativeButton("Não", null);
+
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+
+                }
+
+
+            }
+        };
+    }
+
+
+    private void atualizaListaBest() {
+        try {
+
+            melhorComentariosRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    bestArrayList.clear();
+                    for (DataSnapshot data : dataSnapshot.getChildren()) {
+
+                        Comentario comentario = data.getValue(Comentario.class);
+                        bestArrayList.add(comentario);
+
+                    }
+                    Collections.reverse(bestArrayList);
+                    adapterComentBest.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void atualizaLista() {
+
+        try {
+            comentariosRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    comentarioArrayList.clear();
+                    for (DataSnapshot data : dataSnapshot.getChildren()) {
+
+                        Comentario comentario = data.getValue(Comentario.class);
+                        comentarioArrayList.add(comentario);
+
+                    }
+                    Collections.reverse(comentarioArrayList);
+                    adapterComent.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+    }
+
+    private View.OnClickListener onClickListener_btnComentario() {
+        return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (editTextComentario.getText().toString().isEmpty()){
@@ -169,17 +364,17 @@ public class PostActivity extends AppCompatActivity implements GoogleApiClient.O
                     String keyComentario = comentariosRef.push().getKey();
 
                     HashMap<String, Object> sendComentario = new HashMap<>();
-                    sendComentario.put("user", usuarioLogado.getIdUser());
+                    sendComentario.put("user", ID_USUARIOLOGADO);
                     sendComentario.put("comentario", editTextComentario.getText().toString());
                     sendComentario.put("best", false);
+                    sendComentario.put("key", keyComentario);
 
                     comentariosRef.child(keyComentario).setValue(sendComentario);
                     editTextComentario.setText("");
                     Toast.makeText(PostActivity.this, "Agradecemos sua resposta.", Toast.LENGTH_SHORT).show();
                 }
             }
-        });
-
+        };
     }
 
     private void goLoginScreen() {
@@ -203,6 +398,7 @@ public class PostActivity extends AppCompatActivity implements GoogleApiClient.O
         logadoNome = findViewById(R.id.ulNome);
 
         listComentario = findViewById(R.id.ul_list_comentario);
+        listComentarioBest = findViewById(R.id.ul_list_melhor_comentario);
 
         editTextComentario  = findViewById(R.id.ul_edt_comentario);
         buttonComentario    = findViewById(R.id.ul_btn_comentario);
@@ -212,13 +408,16 @@ public class PostActivity extends AppCompatActivity implements GoogleApiClient.O
 
     //como colocar imagem dentro do quadrado da tela de post
     // alem de que isso aqui também faz aparecer o nome do cara.
-    public void usuarioPostado() {
-        Usuario usuarioPost = new Usuario(postagem.getUsuario());
+    public void usuarioPostado(String id) {
+
+        usuarioPost = new Usuario(id);
         usuarioPost.getReference().addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 try {
                     //carrega image da postagem
+                    usuarioPost = dataSnapshot.getValue(Usuario.class);
+
                     try {
                         urlFotoLogado = dataSnapshot.child("foto").getValue().toString();
                         Glide.with(PostActivity.this)
@@ -246,6 +445,7 @@ public class PostActivity extends AppCompatActivity implements GoogleApiClient.O
 
             }
         });
+        ID_USUARIOPOST = id;
 
     }
 
@@ -264,11 +464,13 @@ public class PostActivity extends AppCompatActivity implements GoogleApiClient.O
                     viewTitulo.setText(postagem.getTitulo());
                     viewConteudo.setText(postagem.getConteudo());
                     viewUrl.setText(postagem.getUrl());
-                    usuarioPostado();
                     viewMateria.setText(postagem.getMateria());
                 } catch (Exception e) {
                     Log.e("Erro", "Erro ao carregar dados", e);
                 }
+
+                //recupera usuario que postou
+                usuarioPostado(postagem.getUsuario());
             }
 
             @Override
@@ -316,20 +518,20 @@ public class PostActivity extends AppCompatActivity implements GoogleApiClient.O
 
     // // Finaliza Postagem
 
-    // //Inicia Comentario
+    // // Inicia Comentario
 
     //preenche campos
-    private void preencheComentarios(){
-
-        usuarioLogado.getReference().addValueEventListener(new ValueEventListener() {
+    private ValueEventListener recuperaDadosLogado(){
+        return new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                usuarioLogado = dataSnapshot.getValue(Usuario.class);
 
                 try {
                     if (dataSnapshot.child("apelido").exists()) {
-                        logadoNome.setText(dataSnapshot.child("apelido").getValue().toString());
+                        logadoNome.setText(usuarioLogado.getApelido());
                     } else {
-                        logadoNome.setText(dataSnapshot.child("nome").getValue().toString());
+                        logadoNome.setText(usuarioLogado.getNome());
                     }
                 }catch (Exception e){
                     e.printStackTrace();
@@ -353,38 +555,33 @@ public class PostActivity extends AppCompatActivity implements GoogleApiClient.O
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        };
 
 
     }
 
-    private AdapterView.OnItemClickListener listenerItemComentario() {
-        return new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(PostActivity.this, comentarioArrayList.get(i).getComentario(), Toast.LENGTH_SHORT).show();
-            }
-        };
-    }
 
-    private ValueEventListener listenerComentarios() {
-        return new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                comentarioArrayList.clear();
-                for (DataSnapshot data : dataSnapshot.getChildren()){
-                    Comentario comentario = data.getValue(Comentario.class);
-                    comentarioArrayList.add(comentario);
-                }
-                Collections.reverse(comentarioArrayList);
-                adapterComent.notifyDataSetChanged();
-            }
+    private void marcarComoMelhorResposta(int i) {
+        try{
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+            String key = comentarioArrayList.get(i).getKey();
 
-            }
-        };
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("key"       , key);
+            map.put("comentario", comentarioArrayList.get(i).getComentario() );
+            map.put("user"      , comentarioArrayList.get(i).getUser() );
+            map.put("best"      , true );
+
+
+            melhorComentariosRef.child(key).setValue(map);
+
+            comentariosRef.child(key).setValue(null);
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     // // Finaliza Comentario

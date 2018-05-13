@@ -1,9 +1,10 @@
 package ja.respostas.rumpsolutions.br.respostasja2.funcoes;
 
-import android.app.AlertDialog;
+
 import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Toast;
 
@@ -40,6 +41,13 @@ public class Funcoes {
     public void snack(View view, String s){
         Snackbar.make(view, s, Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
+    }
+
+    public AlertDialog.Builder createBuilder(Context context, String titulo, String mensagem){
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(titulo);
+        builder.setMessage(mensagem);
+        return builder;
     }
 
 
